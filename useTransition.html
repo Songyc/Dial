@@ -43,28 +43,18 @@
 
 </div>
 
-
-<!-- =================== 转盘控件Dial =================== -->
-<script src="js/dial.js"></script>
+<script src="js/re-dial.js"></script>
 <script>
-var width = document.documentElement.clientWidth,
-        height = document.documentElement.clientHeight,
-        oDoc = document.getElementsByClassName("doc")[0];
-    oDoc.style.width = width + "px";    
-    oDoc.style.height = height +"px";
+// test 
+var dial = new Dial({
+    target: "#Jtab_ctrl",
+    block: '#Jtab_ctrl .block',
+    position: 'center bottom', 
+    radius: 280,
+    useTransition: false
+});
 </script>
 <script>
-        myDial = new Dial('#Jtab_ctrl',{
-            transition: "-webkit-transform .3s ease-in",        //动画。
-            clickClass: "#Jtab_ctrl .block",
-            click: true,
-            radius: 290,                                        //每个按钮到圆中心的距离，一般取半径长。
-            curBlockChange: true,               
-            consistentAngle: true,                             //块元素是否跟各自的角度一致, 该参数为true时curBlockChange无效
-            initAngle: 0, 
-            position: "center bottom",
-        });
-
 </script>
 </body>
 </html>

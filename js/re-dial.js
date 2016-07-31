@@ -12,30 +12,32 @@
 		_hasOwn = Object.prototype.hasOwnProperty,
 		_toString = Object.prototype.toString;
 
+	// 创建构造函数Dial
 	var Dial = function (options) {
 	 	this.config = this._extend({}, Dial.config, options);
 	 	this._init();
 	}
 
 	Dial.config = {
-		initAngle: 0,
-		radius: 0,
-		block: '',
-		target: '',
-		position: '',
-		usePosition: true,
-		useBlockPosition: true,
-		useTransition: true,
-		useBlockAlwaysUp: true,
-		useBlockToAngle: true,
-		useClick: true,
-		alwaysUp: true,
-		step: 1,
-		oneStep: false,
-		lock: false,
-		autoPlay: true,
+		initAngle: 0, 					// 转盘开始的角度
+		radius: 0, 						// 块元素中心到转盘中心的距离
+		block: '',						// 指示块元素的选择器或元素
+		target: '', 					// 指示转盘的选择器或元素
+		position: 'center bottom', 		// 设置转盘的位置
 
-		onSlideStart: null,
+		usePosition: true,				// 转盘是否用定位
+		useBlockPosition: true,			// 块元素是否用定位
+		useTransition: true,			// 是否用过渡动画
+		useBlockAlwaysUp: true, 		// 块元素是否一直保持向上
+		useBlockToAngle: false,			// 块元素是否一直保持与角度相同的方向
+		useClick: true, 				// 块元素是否能点击转动
+ 
+		step: 1, 						// 转盘每次转动的单位块角度
+		oneStep: false,					// 是否以每次转盘是为单位块角度
+		lock: false,					// 是否锁转盘
+		autoPlay: false,				// 是否自动旋转
+
+		onSlideStart: null,				
 		onSlideMove: null,
 		onSlideEnd: null
 	}
@@ -120,59 +122,74 @@
 				this.angle = config.initAngle || 0;
 				this._rotate(config.initAngle);
 
+				if(config.useBlockToAngle) {
+					config.useBlockAlwaysUp = false;
+				}
+
 				if(config.usePosition) {	
 					this._position(el);
 				}
 
 				this.center = this._center(el);
 
-				if(block && (config.useBlockAlwaysUp || config.useBlockToAngle)) {
-					var width, height, 
-						radius = config.radius, 
-						ele, x, y, rs = '';
-
-					if(typeof block === 'string') {
+				if(typeof block === 'string') {
+					try{
 						block = document.querySelectorAll(block);
+					}catch(e) {}
+
+					if(!block.length) {
+						config.step = config.useBlockPosition = config.useBlockAlwaysUp = config.useBlockPosition = false;
 					}
+
 					if(block.nodeType === 1) {
 						block = [block];
 					}
 
-					config.block = block; 						
-					// 块角度
-					eachAngle = parseFloat(360 / block.length); 	
+					if(config.useBlockPosition) {
+						var width, height, 
+							radius = config.radius, 
+							ele, x, y, rs = '';
 
-					for(var i = 0, l = block.length; i < l; i++) {
-						ele = block[i];
+						config.block = block; 						
+						// 块角度
+						eachAngle = parseFloat(360 / block.length); 	
 
-						width = parseFloat(getComputedStyle(ele, null).width || 0);
-						height = parseFloat(getComputedStyle(ele, null).height || 0);
+						for(var i = 0, l = block.length; i < l; i++) {
+							ele = block[i];
 
-						ele.style.position = 'absolute';
-						ele.style.left = '50%';
-						ele.style.top = '50%';
-						ele.style.marginLeft = '-' + (width / 2) + 'px';
-						ele.style.marginTop = '-' + (height / 2) + 'px';
+							width = parseFloat(getComputedStyle(ele, null).width || 0);
+							height = parseFloat(getComputedStyle(ele, null).height || 0);
 
-						x = radius * ( Math.sin( eachAngle * i * Math.PI / 180 ));		
-						y =  -radius * (Math.cos( eachAngle * i * Math.PI / 180 ));	
+							ele.style.position = 'absolute';
+							ele.style.left = '50%';
+							ele.style.top = '50%';
+							ele.style.marginLeft = '-' + (width / 2) + 'px';
+							ele.style.marginTop = '-' + (height / 2) + 'px';
 
-						if(config.useBlockToAngle) {
-							rs = ' rotate(' + (eachAngle * i) + 'deg)';
+							x = radius * ( Math.sin( eachAngle * i * Math.PI / 180 ));		
+							y =  -radius * (Math.cos( eachAngle * i * Math.PI / 180 ));	
+
+							if(config.useBlockToAngle) {
+								rs = ' rotate(' + (eachAngle * i) + 'deg)';
+							}
+
+							ele.style.transform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
+							ele.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
+
+							this._data(ele, {"translate": {x: x, y: y}, target: ele});
+							
 						}
 
-						ele.style.transform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
-						ele.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
-
-						this._data(ele, {"translate": {x: x, y: y}, target: ele});
-						
+						config.eachAngle = eachAngle;
 					}
-
-					config.eachAngle = eachAngle;
 				}
 
 				if(!config.lock) {
 					this._bind(touchstart);
+				}
+
+				if(config.autoPlay) {
+					this.start();
 				}
 			}
 		},
@@ -312,8 +329,10 @@
 	            el.style.transform = s;
 	            el.style.webkitTransform = s;
 
-		        el.style.transition = 'transform .3s ease-in';
-		        el.style.webkitTransition = '-webkit-transform .3s ease-in';
+	            if(this.config.useTransition) {
+		        	el.style.transition = 'transform .3s ease-in';
+		        	el.style.webkitTransition = '-webkit-transform .3s ease-in';
+	            }
 	        }
 	    })(),
 
@@ -434,7 +453,7 @@
 						break;
 					}
 				}
-			}else if(config.step) { 	// 如果 c.step为true。表示转盘要以块为单位角度滑动。		
+			}else if(config.step) { 	// 如果 c.step为true。表示转盘要以块角度为单位滑动。		
 				var angle = this.angle,
 					slideAngle = config;
 
@@ -489,7 +508,7 @@
 		},
 
 		lock: function () {
-			this.config.lock = true;
+			this._extend(this.config, {lock: true});
 			this.destroy();
 			this._init();
 		}, 
@@ -514,6 +533,7 @@
 
 				if(stop) {
 					clearInterval(timer);
+					return;
 				}
 
 				function autoPlay() {
@@ -529,14 +549,16 @@
 					}
 				}
 
-				timer = setInterval(function () {
-					autoPlay.call(self);
-				}, 1000);
+				if(!timer) {
+					timer = setInterval(function () {
+						autoPlay.call(self);
+					}, 1000);
+				}
 			}
 		})(),
 
 		stop: function () {
-			this.start(false);
+			this.start(true);
 		}
 	}	
 
@@ -561,21 +583,5 @@
 	});
 
 	window.Dial = Dial;
-
-	// test 
-	var dial = new Dial({
-		target: "#Jtab_ctrl",
-		block: '#Jtab_ctrl .block',
-		position: 'center center',
-		initAngle: 0,
-		radius: 280,
-		useBlockAlwaysUp: false,
-		step: 2,
-		oneStep: true,
-		lock: false,
-		autoPlay: true
-	});
-	
-	dial.start();
 
 })(this);

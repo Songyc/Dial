@@ -38,36 +38,23 @@
         <div class="block">5</div>
         <div class="block">6</div>
         <div class="block">7</div>
-        <div class="block">8</div>
+        <div class="block">8</div>w
     </div>
 
 </div>
 
-
-<!-- =================== 转盘控件Dial =================== -->
-<script src="js/dial.js"></script>
+<script src="js/re-dial.js"></script>
 <script>
-var width = document.documentElement.clientWidth,
-        height = document.documentElement.clientHeight,
-        oDoc = document.getElementsByClassName("doc")[0];
-    oDoc.style.width = width + "px";    
-    oDoc.style.height = height +"px";
+// test 
+var dial = new Dial({
+    target: "#Jtab_ctrl",
+    block: '#Jtab_ctrl .block',
+    position: 'center center',
+    radius: 280,
+    useClick: false
+});
 </script>
 <script>
-myDial = new Dial('#Jtab_ctrl',{
-    transition: "-webkit-transform .3s ease-in",        //动画。
-    clickClass: "#Jtab_ctrl .block",
-    click: false,
-    radius: 290,                                        //每个按钮到圆中心的距离，一般取半径长。
-    curBlockChange: true,               
-    consistentAngle: false,                             //块元素是否跟各自的角度一致, 该参数为true时curBlockChange无效
-    initAngle: 0, 
-    position: "center center",
-    // onSlideEnd: function () {
-    //     var slideAngle = this.slideAngle;
-    //     myDial2.slide(slideAngle);
-    // }
-});
 </script>
 </body>
 </html>

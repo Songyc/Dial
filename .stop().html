@@ -12,6 +12,8 @@
     .tab-ctrl:before {  content: 'S'; font-size: 320px; background: #ffdf42; width: 63%; height: 63%; position: absolute; left: 50%; margin-left: -31.5%; bottom: 19%; border-radius: 50%; text-align: center;}
     .tab-ctrl .block{width:164px;height:164px;position:absolute;background: rgba(255, 223, 66, 0.5);border-radius:50%;font-size: 40px;line-height: 164px;text-align: center;}
     .tab-ctrl .block.cur{background: rgba(255, 223, 66, 1); font-size:80px;}
+    .button{border-radius: 5px; background: #0070ff; color:#fff; width:300px; height:50px; font-size: 30px;line-height: 50px; text-align: center; margin:600px auto 0; }
+    .button:hover{background: #0029ff;}
     </style>
     <script type="text/javascript">
     if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
@@ -40,7 +42,8 @@
         <div class="block">7</div>
         <div class="block">8</div>
     </div>
-
+    
+    <div class="button">停止</div>
 </div>
 
 <script src="js/re-dial.js"></script>
@@ -49,9 +52,14 @@
 var dial = new Dial({
     target: "#Jtab_ctrl",
     block: '#Jtab_ctrl .block',
-    position: 'center center',
+    position: 'center top',
     radius: 280,
+    autoPlay: true
 });
+
+document.querySelector('.button').onclick = function () {
+    dial.stop();
+}
 </script>
 <script>
 </script>

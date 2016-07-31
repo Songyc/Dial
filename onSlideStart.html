@@ -51,7 +51,11 @@ var dial = new Dial({
     block: '#Jtab_ctrl .block',
     position: 'center center',
     radius: 280,
+    onSlideStart: function () {
+        console.log('onSlideStart');
+    }
 });
+
 </script>
 <script>
 </script>

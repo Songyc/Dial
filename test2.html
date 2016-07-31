@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    .test{width:300px;height:300px;background:red;line-height: 300px;text-align: center;font-size: 50px;
+        transform: translate(45px, 45px);
+    }
+    </style>
+</head>
+<body>
+    
+    <div class="test">
+        test    
+    </div>
+
+    <script>
+    // test
+    var matrix = (function () {
+        var rst = [], 
+            ts, rs, scs, sks,
+            cf = {
+                translate: function (t, rst, el) {
+                    if(typeof t === 'number') {
+                        t = { x: t, y: t }
+                    }
+
+                    if(t === true) {
+                        // var rmatrix = /(-?\d\d*(?:\.\d\d*(?:e-)?\d*)?)/g,
+                        //     a, b, c, d, e, f, 
+                        //     x, y, z, tx, ty,
+
+                        //     matrix = ('transform' in el) ? 
+                        //         getComputedStyle(el, null).transform :
+                        //         getComputedStyle(el, null).webkitTransform,
+
+                        //     m = matrix.match(rmatrix);
+
+                        // a = m[0];
+                        // b = m[1];
+                        // c = m[2];
+                        // d = m[3];
+                        // e = m[4];
+                        // f = m[5];
+
+                        // x = 0;
+                        // y = 0;
+                        // z = 1;
+
+                        // tx = a * x + c * y + e * z;
+                        // ty = b * x + d * y + f * z;
+
+                        // t = {x: tx, y: ty};
+
+                        
+                    }
+
+                    ts = "translate(" + t.x + "px, " + t.y + "px)";
+
+                    rst.push(ts);
+                },
+                rotate: function (r, rst) {
+                    rs = "rotate(" + r + "deg)";
+                    rst.push(rs);
+                },
+                scale: function (sc, rst) {
+                    if(typeof sc === 'number') {
+                        scs = "scale(" + sc + ")";
+                    }else {
+                        scs += "scale(" + sc.x + ", " + sc.y + ")";
+                    }
+                    rst.push(scs);
+                },
+                skew: function (sk, rst) {
+                    sks = "skew(" + sk + "deg)";
+                    rst.push(sks);
+                }
+            };
+
+        return function (el, prop) {
+
+            for(var key in prop) {
+                cf[key](prop[key], s, el);
+            }
+
+            rst = rst.join(" ");
+            
+            el.style.transform = s;
+            el.style.webkitTransform = s;
+            el.style.transition = 'transform .3s ease-in';
+            el.style.webkitTransition = '-webkit-transform .3s ease-in';
+        }
+    })();
+
+    matrix(document.querySelector('.test'), {"translate": true, "skew": 45});
+    </script>
+</body>
+</html>

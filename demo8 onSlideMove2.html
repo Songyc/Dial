@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3, minimum-scale=1.0,user-scalable=no,minimal-ui">
+<style>
+    body{margin:0 auto;padding:0 auto;overflow: hidden;}
+    .doc{height: 1200px;}
+    .tab-ctrl {position: absolute;width: 576px;height: 576px;   border-radius: 50%;border:2px solid #414141;}
+    .tab-ctrl2{left:55%;}
+    .tab-ctrl:before {  content: 'S'; font-size: 320px; background: #ffdf42; width: 63%; height: 63%; position: absolute; left: 50%; margin-left: -31.5%; bottom: 19%; border-radius: 50%; text-align: center;}
+    .tab-ctrl .block{width:164px;height:164px;position:absolute;background: rgba(255, 223, 66, 0.5);border-radius:50%;font-size: 40px;line-height: 164px;text-align: center;}
+    .tab-ctrl .block.cur{background: rgba(255, 223, 66, 1); font-size:80px;}
+    </style>
+    <script type="text/javascript">
+    if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
+        var version = parseFloat(RegExp.$1);
+        if(version>2.3){
+            var phoneScale = parseInt(window.screen.width)/640;
+            document.write('<meta name="viewport" content="width=640, minimum-scale = '+ phoneScale +', maximum-scale = '+ phoneScale +', target-densitydpi=device-dpi">');
+        }else{
+            document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
+        }
+    }else{
+        document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi,minimal-ui">');
+    }
+    </script>
+</head>
+<body>
+<div class="doc">
+
+    <div class="tab-ctrl" id="Jtab_ctrl">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>
+
+    <div class="tab-ctrl tab-ctrl2" id="Jtab_ctrl2">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>
+
+    <div class="tab-ctrl tab-ctrl3" id="Jtab_ctrl3">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>
+</div>
+
+
+<!-- =================== 转盘控件Dial =================== -->
+<script src="js/dial.js"></script>
+<script>
+var width = document.documentElement.clientWidth,
+        height = document.documentElement.clientHeight,
+        oDoc = document.getElementsByClassName("doc")[0];
+    oDoc.style.width = width + "px";    
+    oDoc.style.height = height +"px";
+</script>
+<script>
+        myDial = new Dial('#Jtab_ctrl',{
+            transition: "-webkit-transform .5s ease-in",        //动画。
+            clickClass: "#Jtab_ctrl .block",
+            click: true,
+            radius: 290,                                        //每个按钮到圆中心的距离，一般取半径长。
+            curBlockChange: true,               
+            consistentAngle: false,                             //块元素是否跟各自的角度一致, 该参数为true时curBlockChange无效
+            initAngle: 135, 
+            position: "left top",
+            onSlideMove: function () {
+                var slideAngle = this.slideAngle;
+                console.log(slideAngle);
+                myDial2.slideMove(slideAngle);
+                myDial3.slideMove(slideAngle);
+            },
+            onSlideEnd: function () {
+                var slideAngle = this.slideAngle;
+                myDial2.slide(slideAngle);
+                myDial3.slide(slideAngle);
+            }
+        });
+
+        myDial2 = new Dial('#Jtab_ctrl2',{
+            transition: "-webkit-transform .5s ease-in",        //动画。
+            clickClass: "#Jtab_ctrl2 .block",
+            click: true,
+            radius: 290,                                        //每个按钮到圆中心的距离，一般取半径长。
+            curBlockChange: true,               
+            consistentAngle: false,                             //块元素是否跟各自的角度一致, 该参数为true时curBlockChange无效
+            initAngle: -90,
+            position: "center right",
+            oneStep: false,
+            isLock: false,
+            isInterface: true,
+            onSlideMove: function () {
+                var slideAngle = this.slideAngle;
+                console.log(slideAngle);
+                myDial.slideMove(slideAngle);
+                myDial3.slideMove(slideAngle);
+            },
+            onSlideEnd: function () {
+                var slideAngle = this.slideAngle;
+                myDial.slide(slideAngle);
+                myDial3.slide(slideAngle);
+            }
+        });
+
+        myDial3 = new Dial('#Jtab_ctrl3',{
+            transition: "-webkit-transform .5s ease-in",        //动画。
+            clickClass: "#Jtab_ctrl3 .block",
+            click: true,
+            radius: 290,                                        //每个按钮到圆中心的距离，一般取半径长。
+            curBlockChange: true,               
+            consistentAngle: false,                             //块元素是否跟各自的角度一致, 该参数为true时curBlockChange无效
+            initAngle: 45,
+            position: "left bottom",
+            oneStep: false,
+            isLock: false,
+            isInterface: true,
+            onSlideMove: function () {
+                var slideAngle = this.slideAngle;
+                console.log(slideAngle);
+                myDial.slideMove(slideAngle);
+                myDial2.slideMove(slideAngle);
+            },
+            onSlideEnd: function () {
+                var slideAngle = this.slideAngle;
+                myDial.slide(slideAngle);
+                myDial2.slide(slideAngle);
+            }
+        });
+</script>
+</body>
+</html>

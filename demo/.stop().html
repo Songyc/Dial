@@ -43,10 +43,10 @@
         <div class="block">8</div>
     </div>
     
-    <div class="button">解锁</div>
+    <div class="button">停止</div>
 </div>
 
-<script src="js/re-dial.js"></script>
+<script src="../js/re-dial.js"></script>
 <script>
 // test 
 var dial = new Dial({
@@ -54,11 +54,11 @@ var dial = new Dial({
     block: '#Jtab_ctrl .block',
     position: 'center top',
     radius: 280,
-    lock: true
+    autoPlay: true
 });
 
 document.querySelector('.button').onclick = function () {
-    dial.unLock();
+    dial.stop();
 }
 </script>
 <script>

@@ -2,10 +2,9 @@
 	'use strict';
 
 	var doc = document,
-		hasTouch = 'ontouchstart' in window,
-		touchstart = hasTouch ? 'touchstart' : 'mousedown',
-	    touchmove = hasTouch ? 'touchmove' : 'mousemove',
-	    touchend = hasTouch ? 'touchend' : 'mouseup',
+		touchstart = 'touchstart',
+	    touchmove = 'touchmove',
+	    touchend = 'touchend',
 		emtpy = function (){},
 
 		_slice = Array.prototype.slice,
@@ -103,94 +102,99 @@
 			}
 		},
 
-		_init: function () {
+		_init: function (options) {
 			var self = this,
 				config = this.config,
 				el = config.target,
 				block = config.block,
 				eachAngle;
 
-			if(typeof el === 'string') {
-				el = document.querySelector(el);
-			}
-			
-			if(el.nodeType === 1) {
-
-				config.initAngle %= 360;
-				this.target = el; 							
-				this.dialInitAngle = (config.initAngle - 90) % 360; 			
-				this.angle = config.initAngle || 0;
-				this._rotate(config.initAngle);
-
-				if(config.useBlockToAngle) {
-					config.useBlockAlwaysUp = false;
+			if(!this.hasInited) {
+				
+				if(typeof el === 'string') {
+					el = document.querySelector(el);
 				}
 
-				if(config.usePosition) {	
-					this._position(el);
-				}
+				if(el.nodeType === 1) {
 
-				this.center = this._center(el);
+					config.initAngle %= 360;
+					this.target = el; 							
+					this.dialInitAngle = (config.initAngle - 90) % 360; 			
+					this.angle = config.initAngle || 0;
+					this._rotate(config.initAngle);
 
-				if(typeof block === 'string') {
-					try{
-						block = document.querySelectorAll(block);
-					}catch(e) {}
-
-					if(!block.length) {
-						config.step = config.useBlockPosition = config.useBlockAlwaysUp = config.useBlockPosition = false;
+					if(config.useBlockToAngle) {
+						config.useBlockAlwaysUp = false;
 					}
 
-					if(block.nodeType === 1) {
-						block = [block];
+					if(config.usePosition) {	
+						this._position(el);
 					}
 
-					if(config.useBlockPosition) {
-						var width, height, 
-							radius = config.radius, 
-							ele, x, y, rs = '';
+					this.center = this._center(el);
 
-						config.block = block; 						
-						// 块角度
-						eachAngle = parseFloat(360 / block.length); 	
+					if(typeof block === 'string') {
+						try{
+							block = document.querySelectorAll(block);
+						}catch(e) {}
 
-						for(var i = 0, l = block.length; i < l; i++) {
-							ele = block[i];
-
-							width = parseFloat(getComputedStyle(ele, null).width || 0);
-							height = parseFloat(getComputedStyle(ele, null).height || 0);
-
-							ele.style.position = 'absolute';
-							ele.style.left = '50%';
-							ele.style.top = '50%';
-							ele.style.marginLeft = '-' + (width / 2) + 'px';
-							ele.style.marginTop = '-' + (height / 2) + 'px';
-
-							x = radius * ( Math.sin( eachAngle * i * Math.PI / 180 ));		
-							y =  -radius * (Math.cos( eachAngle * i * Math.PI / 180 ));	
-
-							if(config.useBlockToAngle) {
-								rs = ' rotate(' + (eachAngle * i) + 'deg)';
-							}
-
-							ele.style.transform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
-							ele.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
-
-							this._data(ele, {"translate": {x: x, y: y}, target: ele});
-							
+						if(!block.length) {
+							config.step = config.useBlockPosition = config.useBlockAlwaysUp = config.useBlockPosition = false;
 						}
 
-						config.eachAngle = eachAngle;
+						if(block.nodeType === 1) {
+							block = [block];
+						}
+
+						if(config.useBlockPosition) {
+							var width, height, 
+								radius = config.radius, 
+								ele, x, y, rs = '';
+
+							config.block = block; 						
+							// 块角度
+							eachAngle = parseFloat(360 / block.length); 	
+
+							for(var i = 0, l = block.length; i < l; i++) {
+								ele = block[i];
+
+								width = parseFloat(getComputedStyle(ele, null).width || 0);
+								height = parseFloat(getComputedStyle(ele, null).height || 0);
+
+								ele.style.position = 'absolute';
+								ele.style.left = '50%';
+								ele.style.top = '50%';
+								ele.style.marginLeft = '-' + (width / 2) + 'px';
+								ele.style.marginTop = '-' + (height / 2) + 'px';
+
+								x = radius * ( Math.sin( eachAngle * i * Math.PI / 180 ));		
+								y =  -radius * (Math.cos( eachAngle * i * Math.PI / 180 ));	
+
+								if(config.useBlockToAngle) {
+									rs = ' rotate(' + (eachAngle * i) + 'deg)';
+								}
+
+								ele.style.transform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
+								ele.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
+
+								this._data(ele, {"translate": {x: x, y: y}, target: ele});
+								
+							}
+
+							config.eachAngle = eachAngle;
+						}
 					}
-				}
 
-				if(!config.lock) {
-					this._bind(touchstart);
 				}
+				this.hasInited = true;
+			}
 
-				if(config.autoPlay) {
-					this.start();
-				}
+			if(!config.lock) {
+				this._bind(touchstart);
+			}
+
+			if(config.autoPlay) {
+				this.start();
 			}
 		},
 
@@ -207,8 +211,8 @@
 			};
 			// 将位置字符串转成数组
 			p = p.trim().split(' ');
-			// 如果数组第一个位置为top或者bottom, 则要将两个位置调换。比如['top', 'left']，换成['left', 'top']。
-			if(/^(t|b)/.test(p[0])) {
+			// 如果数组第一个位置为top或者bottom; 或者第一个是center, 第二个是left或者right，要将两个位置调换。比如['top', 'left']，换成['left', 'top']。
+			if(/^(t|b)/.test(p[0]) || /^c/.test(p[0]) && /^(l|r)/.test(p[1])) {
 				t = p[0];
 				p[0] = p[1];
 				p[1] = t;
@@ -279,35 +283,57 @@
 		},
 
 		_matrix: (function () {
-	        var s, scs, 
-	        	rst = [], key,
+	        var s, scs, rst = [], key,
+	        	rfixe = /e-/g,
 	            cf = {
-	                translate: function (t, el) {
+	                translate: function (t) {
 	                    if(typeof t === 'number') {
 	                        t = { x: t, y: t }
 	                    }
 
+	                    t = fixE(t);
+
 	                    return ("translate(" + t.x + "px, " + t.y + "px)");
 	                },
-	                rotate: function (r) {
+	                rotate: function (t) {
 
-	                    return ("rotate(" + r + "deg)");
+	                    return ("rotate(" + fixE(t) + "deg)");
 	                },
-	                scale: function (sc) {
+	                scale: function (t) {
 
-	                    if(typeof sc === 'number') {
-	                        scs = "scale(" + sc + ")";
-	                    }else {
+	                    if(typeof t === 'number') {
+	                        t = "scale(" + t + ")";
+	                    }else if(typeof t === 'object'){
 
-	                        scs += "scale(" + sc.x + ", " + sc.y + ")";
+	                        t += "scale(" + t.x + ", " + t.y + ")";
 	                    }
 
-	                    return scs;
+	                    return fixE(t);
 	                },
-	                skew: function (sk) {
-	                    return ("skew(" + sk + "deg)");
+	                skew: function (t) {
+	                    return ("skew(" + fixE(t) + "deg)");
 	                }
 	            };
+
+	        function fixE(t) {
+
+			    if(typeof t === 'object') {
+			        for(var key in t) {
+			            t[key] = fixE(t[key]);
+			        }
+
+			        return t;
+			    }
+
+			    if(typeof t === 'number') {
+			        t += "";
+			    }
+
+			    if(rfixe.test(t)) {
+			        t = "0";
+			    }
+			    return t;
+			}
 
 	        return function (el, prop) {
 	        	rst = [];
@@ -325,10 +351,10 @@
 	            this._data(el, prop);
 
 	            s = rst.join(" ");
-	            
+	           
 	            el.style.transform = s;
 	            el.style.webkitTransform = s;
-
+	            
 	            if(this.config.useTransition) {
 		        	el.style.transition = 'transform .3s ease-in';
 		        	el.style.webkitTransition = '-webkit-transform .3s ease-in';
@@ -337,7 +363,7 @@
 	    })(),
 
 		_start: function (e) {
-			var point = hasTouch ? e.touches[0] : e;
+			var point = e.touches[0];
 
  			e.preventDefault();
 
@@ -358,7 +384,7 @@
 		},
 
 		_move: function (e) {
-			var point = hasTouch ? e.touches[0] : e,
+			var point = e.touches[0],
 				curAngle, lAngle,
 				startAngle = this.startAngle,
 				angle = this.angle;
@@ -407,7 +433,7 @@
 		},
 
 		_end: function (e) {
-			var point = hasTouch ? ( e.touches[0] ? e.touches[0] : e.changedTouches[0] ) : e,
+			var point = e.touches[0] ? e.touches[0] : e.changedTouches[0],
 				config = this.config, cb, l,
 				eachAngle = config.eachAngle;
 
@@ -454,8 +480,7 @@
 					}
 				}
 			}else if(config.step) { 	// 如果 c.step为true。表示转盘要以块角度为单位滑动。		
-				var angle = this.angle,
-					slideAngle = config;
+				var angle = this.angle;
 
 				// 修正变量块角度eachAngle。c.step表示旋转的块数量
 				eachAngle *= config.step;
@@ -473,11 +498,10 @@
 					}else {
 						slideAngle = 0;
 					}
-					
+
 					angle += slideAngle;
 
 				}else {
-
 					// 计算滑动块角度。先将滑动角度除以块角度，再四舍五入，最后乘以块角度。
 					angle = Math.round( angle / eachAngle ) * eachAngle;
 				}
@@ -508,7 +532,7 @@
 		},
 
 		lock: function () {
-			this._extend(this.config, {lock: true});
+			this.config.lock = true;
 			this.destroy();
 			this._init();
 		}, 

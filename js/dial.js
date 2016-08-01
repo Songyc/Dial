@@ -152,21 +152,22 @@
 	var setCss = {},
 		mapPosition = {
 			"left top": {"left": "0%", "top": "0%"},
-			"top left": {"left": "0%", "top": "0%"},
 			"left center": {"left": "0%", "top": "50%"},
-			"center left": {"left": "0%", "top": "50%"},
 			"left bottom": {"left": "0%", "top": "100%"},
-			"bottom left": {"left": "0%", "top": "100%"},
-			"center top": {"left": "50%", "top": "0%"},
-			"top center": {"left": "50%", "top": "0%"},
+			"right top": {"left": "100%", "top": "0%"},
+			"right center": {"left": "100%", "top": "50%"},
+			"right bottom": {"left": "100%", "top": "100%"},
 			"center center": {"left": "50%", "top": "50%"},
 			"center bottom": {"left": "50%", "top": "100%"},
-			"bottom center": {"left": "50%", "top": "100%"},
-			"right top": {"left": "100%", "top": "0%"},
-			"top right": {"left": "100%", "top": "0%"},
-			"right center": {"left": "100%", "top": "50%"},
+			"center top": {"left": "50%", "top": "0%"},
+			
 			"center right": {"left": "100%", "top": "50%"},
-			"right bottom": {"left": "100%", "top": "100%"},
+			"center left": {"left": "0%", "top": "50%"},
+			"top left": {"left": "0%", "top": "0%"},
+			"top center": {"left": "50%", "top": "0%"},
+			"top right": {"left": "100%", "top": "0%"},
+			"bottom left": {"left": "0%", "top": "100%"},
+			"bottom center": {"left": "50%", "top": "100%"},
 			"bottom right": {"left": "100%", "top": "100%"}
 		};
 	fn.extend(setCss, {

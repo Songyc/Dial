@@ -30,7 +30,7 @@
 <body>
 <div class="doc">
 
-    <div class="tab-ctrl" id="Jtab_ctrl">
+    <div class="tab-ctrl" id="Jtab_ctrl1">
         <div class="block">1</div>
         <div class="block">2</div>
         <div class="block">3</div>
@@ -41,17 +41,60 @@
         <div class="block">8</div>
     </div>
 
+    <div class="tab-ctrl" id="Jtab_ctrl2">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>
+
+    <div class="tab-ctrl" id="Jtab_ctrl3">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>
 </div>
 
-<script src="js/re-dial.js"></script>
+<script src="../js/re-dial.js"></script>
 <script>
-// test 
-var dial = new Dial({
-    target: "#Jtab_ctrl",
-    block: '#Jtab_ctrl .block',
-    position: 'center center',
+document.body.width = document.documentElement.clientWidth + "px";
+document.body.height = document.documentElement.clientHeight + "px";
+
+// test
+var dial1 = new Dial({
+    target: "#Jtab_ctrl1",
+    block: '#Jtab_ctrl1 .block',
+    position: 'left top',
     radius: 280,
+    initAngle: 135
 });
+
+var dial2 = new Dial({
+    target: "#Jtab_ctrl2",
+    block: '#Jtab_ctrl2 .block',
+    position: 'center right',
+    radius: 280,
+    initAngle: -90,
+    onSlideEnd: function () {}
+});
+
+var dial3 = new Dial({
+    target: "#Jtab_ctrl3",
+    block: '#Jtab_ctrl3 .block',
+    position: 'left bottom',
+    radius: 280,
+    initAngle: 45
+});
+
 </script>
 <script>
 </script>

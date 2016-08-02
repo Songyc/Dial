@@ -422,12 +422,15 @@
 			if(this.config.useBlockAlwaysUp) {
 				this._alwaysUp();
 			}
-			
-			if(!this.config.oneStep) { 		// 如果不支持每次只转动以单位块角度，则记录转盘滑动角度。
+
+			// 如果不支持每次只转动以单位块角度，则记录转盘滑动角度。
+			if(!this.config.oneStep) { 		
 				this.angle = angle;
 			}
-
+			// 记录本次滑动角度
 			this.slideAngle = curAngle - startAngle;
+
+			// 记录移动滑动角度
 			this.slideMoveAngle = curAngle - lAngle;
 
 			// 记录当前角度为上一次角度
@@ -526,15 +529,14 @@
 				this.activeIndex = this.angle > 0 ? (360 - this.angle % 360) / eachAngle : -(this.angle % 360) / eachAngle;
 			}
 
-			// 清空上一次滑动角度
-			this.lAngle = null;
-
-			// 标记this.move为false，指示转盘不是在滑动状态 						
-			this.move = false;
-
 			if(this.config.onSlideEnd) {
 				this.config.onSlideEnd.call(this);
 			}
+				
+			this.lAngle = null;			// 清空上一次滑动角度
+			this.move = false;			// 标记this.move为false，指示转盘不是在滑动状态
+			this.slideAngle = 0;
+			this.slideMoveAngle = 0;
 
 			var list = Dial.list;
 			if(list.length) {
@@ -599,7 +601,7 @@
 			return Math.round(Math.atan2(dY, dX) * 180 / Math.PI);
 		},
 
-		playTo: function (index) {
+		slideTo: function (index) {
 			var config = this.config,
 				eachAngle = config.eachAngle,
 				step = config.step,
@@ -647,49 +649,64 @@
 			this._unbind(touchend);
 		},
 
-		start: (function () {
-			var timer = null;
+		start: function () {
+			var self = this,
+				config = this.config,
+				eachAngle = config.eachAngle,
+				step = config.step,
+				slideAngle = step * eachAngle;
 
-			return function (stop) {
-				var self = this;
+			function autoPlay() {
+				this._rotate( (this.angle += slideAngle) );
 
-				if(stop) {
-					clearInterval(timer);
-					return;
-				}
-
-				function autoPlay() {
-					var config = this.config,
-						eachAngle = config.eachAngle,
-						step = config.step,
-						slideAngle = step * eachAngle;
-
-					this._rotate( (this.angle += slideAngle) );
-
-					if(config.useBlockAlwaysUp) {
-						this._alwaysUp();
-					}
-				}
-
-				if(!timer) {
-					timer = setInterval(function () {
-						autoPlay.call(self);
-					}, 1000);
+				if(this.config.useBlockAlwaysUp) {
+					this._alwaysUp();
 				}
 			}
-		})(),
 
-		stop: function () {
-			this.start(true);
+			var list = Dial.list;
+			if(list.length) {
+				for(var i = 0, l = list.length; i < l; i++) {
+					var dial = list[i];
+					if(dial.config.link) {
+
+						if(!dial.timer) {
+							(function (dial) {
+								dial.timer = setInterval(function () {
+									autoPlay.call(dial);
+								}, 1000);
+							})(dial);
+						}
+
+						if(eachAngle) {
+							dial.activeIndex = dial.angle > 0 ? (360 - dial.angle % 360) / eachAngle : -(dial.angle % 360) / eachAngle;
+						}
+					}
+				}
+			}
 		},
 
-		slideMove: function (slideMoveAngle) {
+		stop: function () {
+			var list = Dial.list;
+			if(list.length) {
+				for(var i = 0, l = list.length; i < l; i++) {
+					var dial = list[i];
+					if(dial.config.link) {
+
+						if(dial.timer) {
+							clearInterval(dial.timer);
+						}
+					}
+				}
+			}
+		},
+
+		slideMove: function (slideAngle) {
 			var config = this.config,
 				eachAngle = config.eachAngle,
 				angle = this.angle;;
 
-			console.log(slideMoveAngle)
-			this._rotate( angle += slideMoveAngle );
+			this._rotate( angle += slideAngle );
 
 			if(this.config.useBlockAlwaysUp) {
 				this._alwaysUp();
@@ -698,41 +715,6 @@
 			if(!this.config.oneStep) {
 				// 记录总滑动角度
 				this.angle = angle;
-			}
-
-			// this.slideEnd();
-		},
-
-		slideEnd: function () {
-			var config = this.config,
-				eachAngle = config.eachAngle;;
-
-			if(config.step) { 	// 如果 c.step为true。表示转盘要以块角度为单位滑动。		
-				var angle = this.angle;
-
-				// 修正变量块角度eachAngle。c.step表示旋转的块数量
-				eachAngle *= config.step;
-
-				if(config.oneStep) {
-					var slideAngle = this.slideAngle,
-						steps;
-
-					steps = Math.round( slideAngle / eachAngle )
-
-					if(steps > 0) {
-						slideAngle = eachAngle;
-					}else if(steps < 0) {
-						slideAngle = -eachAngle;
-					}else {
-						slideAngle = 0;
-					}
-
-					angle += slideAngle;
-
-				}else {
-					// 计算滑动块角度。先将滑动角度除以块角度，再四舍五入，最后乘以块角度。
-					angle = Math.round( angle / eachAngle ) * eachAngle;
-				}
 			}
 		}
 	}

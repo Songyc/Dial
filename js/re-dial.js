@@ -606,6 +606,17 @@
 		}
 	});
 
-	window.Dial = Dial;
+	if (typeof module === "object" && module && typeof module.exports === "object") {
+        module.exports = Dial;
+    } else {
 
+        window.Dial = Dial;
+
+        if (typeof define === "function" && define.amd) {
+            define("dial", [], function() {
+                return Dial;
+            });
+        }
+    }
+    
 })(this);

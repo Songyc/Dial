@@ -75,7 +75,9 @@ var dial1 = new Dial({
     block: '#Jtab_ctrl1 .block',
     position: 'left top',
     radius: 280,
-    initAngle: 135
+    initAngle: 135,
+    link: true,
+    step: 2
 });
 
 var dial2 = new Dial({
@@ -84,7 +86,8 @@ var dial2 = new Dial({
     position: 'center right',
     radius: 280,
     initAngle: -90,
-    onSlideEnd: function () {}
+    link: true,
+    step: 2
 });
 
 var dial3 = new Dial({
@@ -92,7 +95,9 @@ var dial3 = new Dial({
     block: '#Jtab_ctrl3 .block',
     position: 'left bottom',
     radius: 280,
-    initAngle: 45
+    initAngle: 45,
+    link: true,
+    step: 2
 });
 
 </script>

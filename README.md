@@ -46,11 +46,12 @@
         <div class="block">7</div>
         <div class="block">8</div>
     </div>
-    
+    <script src="dial.js"></script>
+    <script>
     var dial = new Dial({
         target: "#Jtab_ctrl",
         block: '#Jtab_ctrl .block',
         position: 'center bottom',
-        radius: 280,
+        radius: 280
     });
-    
+    </script>

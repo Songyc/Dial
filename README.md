@@ -36,7 +36,7 @@
 *	.next Function - 调用.next()方法会旋转到下一个块元素的位置。
 
 ##例子
-    *	html:
+
     <div class="tab-ctrl" id="Jtab_ctrl">
         <div class="block">1</div>
         <div class="block">2</div>
@@ -48,7 +48,6 @@
         <div class="block">8</div>
     </div>
     
-    *	js:
     var dial = new Dial({
         target: "#Jtab_ctrl",
         block: '#Jtab_ctrl .block',

@@ -5,7 +5,7 @@
 块元素指类名为".block"的元素
 块角度指每次旋转一个块元素的角度
 
-*	[initAngle]() Interger - 设置转盘开始的角度。默认值为0。
+*	initAngle Interger - 设置转盘开始的角度。默认值为0。
 *	radius Interger - 块元素中心到转盘中心的距离。默认值为0。
 *	target String/Object - 转盘元素的选择器表达式或者转盘元素。默认值为''。
 *	block String/Object - 块元素的选择器表达式或者块元素。默认值为''。
@@ -25,9 +25,10 @@
 *	onSlideMove Function - 转盘滑动时触发。
 *	onSlideEnd Function - 转盘滑动结束后触发。
 
+##方法
 .slideTo Function - 调用.slideTo(index)方法会旋转到参数对应的块元素位置。其中参数index是块元素的下标。
 .start Function - 调用.start()方法会自动旋转，等效于设置选项autoPlay为true。
-.stop Function - 调用.stop()方法会停止自动旋转。
+.stop Function - 调用.stop()方法停止自动旋转。
 .lock Function - 调用.lock()方法会锁住转盘。
 .unLock Function - 调用.unLock()方法转盘解锁。
 .destroy Function - 调用.destroy()方法会销毁转盘对象。

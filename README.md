@@ -25,7 +25,7 @@
 *	onSlideMove Function - 转盘滑动时触发。
 *	onSlideEnd Function - 转盘滑动结束后触发。
 
-##方法
+##API
 *	.slideTo Function - 调用.slideTo(index)方法会旋转到参数对应的块元素位置。其中参数index是块元素的下标。
 *	.start Function - 调用.start()方法会自动旋转，等效于设置选项autoPlay为true。
 *	.stop Function - 调用.stop()方法停止自动旋转。
@@ -35,3 +35,14 @@
 *	.prev Function - 调用.prev()方法会旋转到上一个块元素的位置。
 *	.next Function - 调用.next()方法会旋转到下一个块元素的位置。
 
+##例子
+    <div class="tab-ctrl" id="Jtab_ctrl">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>

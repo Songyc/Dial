@@ -27,7 +27,7 @@
 
 ##API
 *	.slideTo Function - 调用.slideTo(index)方法会旋转到参数对应的块元素位置。其中参数index是块元素的下标。
-*	.start Function - 调用.start()方法会自动旋转，等效于设置选项autoPlay为true。
+*	.start Function - 调用.start(time, reverse)方法会自动旋转，等效于设置选项autoPlay为true。参数time设置自动旋转的间隔时间，参数reverse是否以逆时针方向旋转。
 *	.stop Function - 调用.stop()方法停止自动旋转。
 *	.lock Function - 调用.lock()方法会锁住转盘。
 *	.unLock Function - 调用.unLock()方法转盘解锁。

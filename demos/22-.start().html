@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>.start()</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3, minimum-scale=1.0,user-scalable=no,minimal-ui">
+<link rel="stylesheet" href="../dist/css/style.css">
+<style>
+.b-wrap{padding-top:400px;}
+.button{width: 300px; font-size: 26px;display: block; margin:0 auto; margin-bottom:20px;}
+</style>
+<script type="text/javascript">
+if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
+    var version = parseFloat(RegExp.$1);
+    if(version>2.3){
+        var phoneScale = parseInt(window.screen.width)/640;
+        document.write('<meta name="viewport" content="width=640, minimum-scale = '+ phoneScale +', maximum-scale = '+ phoneScale +', target-densitydpi=device-dpi">');
+    }else{
+        document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
+    }
+}else{
+    document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi,minimal-ui">');
+}
+</script>
+</head>
+<body>
+<div class="doc">
+
+    <div class="tab-ctrl" id="Jtab_ctrl">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>
+
+    <div class="b-wrap">
+        <button class="button button1">自动旋转</button>
+        <button class="button button2">时间间隔4秒</button>
+        <button class="button button3">逆时针旋转</button>
+    </div>
+</div>
+
+<script src="../dist/js/Dial.js"></script>
+<script>
+var dial = new Dial({
+    target: "#Jtab_ctrl",
+    block: '#Jtab_ctrl .block',
+    position: 'center top',
+    radius: 280
+});
+
+document.querySelector(".button1").onclick = function () {
+    dial.start();
+}
+
+document.querySelector(".button2").onclick = function () {
+    dial.start(2000);
+}
+
+document.querySelector(".button3").onclick = function () {
+    dial.start(null, true);
+}
+</script>
+</body>
+</html>

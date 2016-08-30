@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>usePosition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3, minimum-scale=1.0,user-scalable=no,minimal-ui">
+<link rel="stylesheet" href="../dist/css/style.css">
+<script type="text/javascript">
+if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
+    var version = parseFloat(RegExp.$1);
+    if(version>2.3){
+        var phoneScale = parseInt(window.screen.width)/640;
+        document.write('<meta name="viewport" content="width=640, minimum-scale = '+ phoneScale +', maximum-scale = '+ phoneScale +', target-densitydpi=device-dpi">');
+    }else{
+        document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
+    }
+}else{
+    document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi,minimal-ui">');
+}
+</script>
+</head>
+<body>
+<div class="doc">
+
+    <div class="tab-ctrl" id="Jtab_ctrl">
+        <div class="block">1</div>
+        <div class="block">2</div>
+        <div class="block">3</div>
+        <div class="block">4</div>
+        <div class="block">5</div>
+        <div class="block">6</div>
+        <div class="block">7</div>
+        <div class="block">8</div>
+    </div>
+</div>
+
+<script src="../dist/js/Dial.js"></script>
+<script>
+var dial = new Dial({
+    target: "#Jtab_ctrl",
+    block: '#Jtab_ctrl .block',
+    position: 'center bottom', 
+    radius: 280,
+    usePosition: false
+});
+</script>
+</body>
+</html>

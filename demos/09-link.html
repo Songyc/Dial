@@ -2,30 +2,22 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>test</title>
+<title>link</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3, minimum-scale=1.0,user-scalable=no,minimal-ui">
-<style>
-    body{margin:0 auto;padding:0 auto;overflow: hidden;}
-    .doc{height: 1200px;}
-    .tab-ctrl {position: absolute;width: 576px;height: 576px;   border-radius: 50%;border:2px solid #414141;}
-    .tab-ctrl2{left:55%;}
-    .tab-ctrl:before {  content: 'S'; font-size: 320px; background: #ffdf42; width: 63%; height: 63%; position: absolute; left: 50%; margin-left: -31.5%; bottom: 19%; border-radius: 50%; text-align: center;}
-    .tab-ctrl .block{width:164px;height:164px;position:absolute;background: rgba(255, 223, 66, 0.5);border-radius:50%;font-size: 40px;line-height: 164px;text-align: center;}
-    .tab-ctrl .block.cur{background: rgba(255, 223, 66, 1); font-size:80px;}
-    </style>
-    <script type="text/javascript">
-    if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
-        var version = parseFloat(RegExp.$1);
-        if(version>2.3){
-            var phoneScale = parseInt(window.screen.width)/640;
-            document.write('<meta name="viewport" content="width=640, minimum-scale = '+ phoneScale +', maximum-scale = '+ phoneScale +', target-densitydpi=device-dpi">');
-        }else{
-            document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
-        }
+<link rel="stylesheet" href="../dist/css/style.css">
+<script type="text/javascript">
+if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
+    var version = parseFloat(RegExp.$1);
+    if(version>2.3){
+        var phoneScale = parseInt(window.screen.width)/640;
+        document.write('<meta name="viewport" content="width=640, minimum-scale = '+ phoneScale +', maximum-scale = '+ phoneScale +', target-densitydpi=device-dpi">');
     }else{
-        document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi,minimal-ui">');
+        document.write('<meta name="viewport" content="width=640, target-densitydpi=device-dpi">');
     }
-    </script>
+}else{
+    document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi,minimal-ui">');
+}
+</script>
 </head>
 <body>
 <div class="doc">
@@ -64,20 +56,15 @@
     </div>
 </div>
 
-<script src="../js/re-dial.js"></script>
+<script src="../dist/js/Dial.js"></script>
 <script>
-document.body.width = document.documentElement.clientWidth + "px";
-document.body.height = document.documentElement.clientHeight + "px";
-
-// test
 var dial1 = new Dial({
     target: "#Jtab_ctrl1",
     block: '#Jtab_ctrl1 .block',
     position: 'left top',
     radius: 280,
     initAngle: 135,
-    link: true,
-    step: 2
+    link: true
 });
 
 var dial2 = new Dial({
@@ -86,8 +73,7 @@ var dial2 = new Dial({
     position: 'center right',
     radius: 280,
     initAngle: -90,
-    link: true,
-    step: 2
+    link: true
 });
 
 var dial3 = new Dial({
@@ -96,12 +82,8 @@ var dial3 = new Dial({
     position: 'left bottom',
     radius: 280,
     initAngle: 45,
-    link: true,
-    step: 2
+    link: true
 });
-
-</script>
-<script>
 </script>
 </body>
 </html>

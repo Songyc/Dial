@@ -11,25 +11,25 @@
 		_hasOwn = Object.prototype.hasOwnProperty,
 		_toString = Object.prototype.toString;
 
-	// 创建构造函数Dial
+	// 构造函数Dial
 	var Dial = function (options) {
 	 	this.config = this._extend({}, Dial.config, options);
 	 	this._init();
 	}
 
 	Dial.config = {
-		initAngle: 0, 					// 转盘开始的角度
+		initAngle: 0, 					// 设置转盘开始的角度
 		radius: 0, 						// 块元素中心到转盘中心的距离
 		block: '',						// 指示块元素的选择器或元素
 		target: '', 					// 指示转盘的选择器或元素
 		position: 'center bottom', 		// 设置转盘的位置
 
-		usePosition: true,				// 转盘是否用定位
+		usePosition: true,				// 是否用position选项。如果该选项为false，选项position会无效。默认为true。
 		useBlockPosition: true,			// 块元素是否用定位
 		useTransition: true,			// 是否用过渡动画
 		useBlockAlwaysUp: true, 		// 块元素是否一直保持向上
-		useBlockToAngle: false,			// 块元素是否一直保持与角度相同的方向
-		useClick: true, 				// 块元素是否能点击转动
+		useBlockToAngle: false,			// 块元素是否一直保持向外
+		useClick: true, 				// 点击块元素，转盘是否能旋转
  
 		step: 1, 						// 转盘每次转动的单位块角度
 		oneStep: false,					// 是否以每次转动只是单位块角度
@@ -74,9 +74,9 @@
 			len = args.length;
 
 			if(len > 1) {		// 如果源对象个数大于1, 遍历args，将源对象设置为数组applyParam的第二个元素，再次调用this._extend(target, src, deep);
-				for(var i = 0; i < len; i++) { 		 	
+				for(var i = 0; i < len; i++) {		 	
 					applyParam[1] = args[i];
-					this._extend.apply(null, applyParam); 
+					this._extend.apply(null, applyParam);
 				}
 			}else {
 				for(var key in src) { 			// 遍历源对象src, 检测它的自定义属性key。如果deep为true，表示支持拷贝对象最底层的属性值，并且key值为对象，调用this._extend(target, src, deep)方法。否则将源对象属性/值深度拷贝到目标对象上。
@@ -92,14 +92,14 @@
 			return target;
 		},
 
-		_alwaysUp: function () {
+		_alwaysUp: function (useTransition) {
 			var b = this.config.block;
 			if(!b || !b.length) {
 				return;
 			}
 			// 遍历块元素，调用this._rotate(prop, el)设置每个块元素。translate为true，表示要加上之前设置的translate属性
 			for(var i = 0, l = b.length; i < l; i++) {
-				this._rotate({translate: true, rotate: -this.angle}, b[i]);
+				this._rotate({translate: true, rotate: -this.angle}, b[i], useTransition);
 			}
 		},
 
@@ -176,11 +176,15 @@
 									rs = ' rotate(' + (eachAngle * i) + 'deg)';
 								}
 
+								if(config.useBlockAlwaysUp) {
+									self._alwaysUp(false);
+								}
+
 								ele.style.transform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
 								ele.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
+
 								// 存储初始块元素位置属性
 								this._data(ele, {"translate": {x: x, y: y}, target: ele});
-								
 							}
 
 							config.eachAngle = eachAngle;
@@ -344,7 +348,7 @@
 			    return t;
 			}
 
-	        return function (el, prop) {
+	        return function (el, prop, useTransition) {
 	        	rst = []; 							// 先清空结果集
 
 	            for(key in prop) { 					// 遍历参数prop属性对象
@@ -364,7 +368,7 @@
 	            el.style.transform = s; 			// 设置transform属性
 	            el.style.webkitTransform = s;
 	            
-	            if(this.config.useTransition) { 		// 如果支持用过渡动画, 设置transition属性
+	            if(this.config.useTransition && useTransition !== false) { 		// 如果支持用过渡动画, 设置transition属性
 		        	el.style.transition = 'transform .3s ease-in'; 
 		        	el.style.webkitTransition = '-webkit-transform .3s ease-in';
 	            }
@@ -607,6 +611,11 @@
 				step = config.step,
 				activeIndex = this.activeIndex,
 				slideAngle = step * eachAngle;
+
+			if(index === activeIndex) {
+				return;
+			}
+
 			// 如果
 			if(index < activeIndex) {
 				slideAngle = (index - (activeIndex - config.block.length)) * slideAngle;
@@ -649,38 +658,47 @@
 			this._unbind(touchend);
 		},
 
-		start: function () {
+		start: function (time, reverse) {
 			var self = this,
 				config = this.config,
 				eachAngle = config.eachAngle,
 				step = config.step,
 				slideAngle = step * eachAngle;
 
+			if(typeof time === 'boolean') {
+				reverse = time;
+				time = undefined;
+			}
+
 			function autoPlay() {
-				this._rotate( (this.angle += slideAngle) );
+				this._rotate( (this.angle += reverse ? slideAngle : -slideAngle) );
 
 				if(this.config.useBlockAlwaysUp) {
 					this._alwaysUp();
 				}
 			}
 
+			function start(_this) {
+				_this.timer = setInterval(function () {
+					autoPlay.call(_this);
+				}, time || 1000);
+				
+				if(eachAngle) {
+					_this.activeIndex = _this.angle > 0 ? (360 - _this.angle % 360) / eachAngle : -(_this.angle % 360) / eachAngle;
+				}
+			}
+			
+			this.stop();
+
+			start(this);
+
 			var list = Dial.list;
+
 			if(list.length) {
 				for(var i = 0, l = list.length; i < l; i++) {
 					var dial = list[i];
-					if(dial.config.link) {
-
-						if(!dial.timer) {
-							(function (dial) {
-								dial.timer = setInterval(function () {
-									autoPlay.call(dial);
-								}, 1000);
-							})(dial);
-						}
-
-						if(eachAngle) {
-							dial.activeIndex = dial.angle > 0 ? (360 - dial.angle % 360) / eachAngle : -(dial.angle % 360) / eachAngle;
-						}
+					if(dial.config.link && this !== dial) {
+						start(dial);
 					}
 				}
 			}
@@ -691,11 +709,8 @@
 			if(list.length) {
 				for(var i = 0, l = list.length; i < l; i++) {
 					var dial = list[i];
-					if(dial.config.link) {
-
-						if(dial.timer) {
-							clearInterval(dial.timer);
-						}
+					if(dial.timer) {
+						clearInterval(dial.timer);
 					}
 				}
 			}
@@ -716,12 +731,16 @@
 				// 记录总滑动角度
 				this.angle = angle;
 			}
+		},
+
+		getIndex: function () {
+			return this.activeIndex;
 		}
 	}
 
 	// 公共方法Dial.prototype._translate, Dial.prototype._rotate, Dial.prototype._scale, Dial.prototype._skew。底层调用Dial.prototype.matrix统一处理。
 	"translate rotate scale skew".split(" ").forEach(function (item, i) {
-		Dial.prototype["_" + item] = function (prop, el) {
+		Dial.prototype["_" + item] = function (prop, el, useTransition) {
 			var obj = {};
 			// 如果未传入参数prop，直接返回。
 			if(prop == null) {
@@ -736,7 +755,7 @@
 				this._extend(obj, prop); 								// 调用this._extend(target, src)方法将参数prop合并到obj对象中
 			}
 
-			this._matrix(el, obj); 							// 调用this._matrix(el, prop)统一处理。
+			this._matrix(el, obj, useTransition); 						// 调用this._matrix(el, prop)统一处理。
 		}
 	});
 

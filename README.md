@@ -5,7 +5,7 @@
 块元素指类名为".block"的元素
 块角度指每次旋转一个块元素的角度
 
-*	[initAngle] Interger - 设置转盘开始的角度。默认值为0。
+*	[initAngle]() Interger - 设置转盘开始的角度。默认值为0。
 *	radius Interger - 块元素中心到转盘中心的距离。默认值为0。
 *	target String/Object - 转盘元素的选择器表达式或者转盘元素。默认值为''。
 *	block String/Object - 块元素的选择器表达式或者块元素。默认值为''。

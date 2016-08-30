@@ -93,6 +93,10 @@
 		},
 
 		_alwaysUp: function (useTransition) {
+			if(!this.config.useBlockAlwaysUp) {
+				return;	
+			}
+
 			var b = this.config.block;
 			if(!b || !b.length) {
 				return;
@@ -176,9 +180,7 @@
 									rs = ' rotate(' + (eachAngle * i) + 'deg)';
 								}
 
-								if(config.useBlockAlwaysUp) {
-									self._alwaysUp(false);
-								}
+								this._alwaysUp(false);
 
 								ele.style.transform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
 								ele.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
@@ -422,10 +424,8 @@
 			// 计算滑动的角度，滑动角度 = 当前角度 - 开始角度。之前的滑动角度再加上本次的滑动角度。旋转转盘
 			this._rotate( (angle += curAngle - lAngle) );
 
-			// 如果c.alwaysUp为true。表示设置了块元素永远向上，调用Dial.prototype._alwaysUp()方法设置角度。
-			if(this.config.useBlockAlwaysUp) {
-				this._alwaysUp();
-			}
+			// 调用Dial.prototype._alwaysUp()方法设置角度。
+			this._alwaysUp();
 
 			// 如果不支持每次只转动以单位块角度，则记录转盘滑动角度。
 			if(!this.config.oneStep) { 		
@@ -451,23 +451,18 @@
 			if(list.length) {
 				for(var i = 0, l = list.length; i < l; i++) {		// 遍历转盘列表数组
 					var dial = list[i];						
-					if(this === dial) {								// 如果this为当前转盘对象，跳过本次操作。因为要联动其它转盘，不需要联动自己。
-						continue;
-					}
 
-					if(dial.config.link) {							// 如果转盘对象支持联动
+					if(dial.config.link && this !== dial) {			// 如果转盘对象支持联动并且不是当前转盘对象。因为要联动其它转盘，不需要联动自己。
 						
 						var eachAngle = dial.config.eachAngle,		
 							angle = dial.angle;
 
-						dial._rotate(angle += curAngle - lAngle); 		// 调用dial._rotate(angle)旋转转盘
+						dial._rotate(angle += curAngle - lAngle); 	// 调用dial._rotate(angle)旋转转盘
 
-						if(dial.config.useBlockAlwaysUp) {			// 如果转盘支持块元素总是向上
-							dial._alwaysUp();						// 调用dial._alwaysUp()设置块元素
-						}
+						dial._alwaysUp();							// 调用dial._alwaysUp()设置块元素
 
-						if(!dial.config.oneStep) {			
-							dial.angle = angle;	
+						if(!dial.config.oneStep) {					// 存储angle
+							dial.angle = angle;
 						}
 					}
 				}
@@ -516,9 +511,7 @@
 						// 之前滑动角度加上本次滑动角度。调用this._rotate(angle)方法旋转
 						this._rotate( (this.angle += slideAngle) );
 
-						if(config.useBlockAlwaysUp) {
-							this._alwaysUp();
-						}
+						this._alwaysUp();
 						// 跳出本次循环
 						break;
 					}
@@ -527,11 +520,7 @@
 				clearStep(this, this.slideAngle); 		// 调用clearStep(dial, slideAngle)计算滑动角度，旋转转盘和块元素
 			}
 
-			// 如果块角度存在，表示支持点击块元素旋转。
-			if(eachAngle) {
-				// 计算中心轴块元素的下标。当滑动角度大于0，说明是顺时针方向旋转。计算公式为(360 - 滑动角度取余) / 单位块角度。否则用滑动角度取余再除以单位块角度，逆时针方向为负数，加上负号转成正数。
-				this.activeIndex = this.angle > 0 ? (360 - this.angle % 360) / eachAngle : -(this.angle % 360) / eachAngle;
-			}
+			this._activeIndex();
 
 			if(this.config.onSlideEnd) {
 				this.config.onSlideEnd.call(this);
@@ -553,9 +542,7 @@
 					if(dial.config.link) {
 						clearStep(dial, this.slideAngle);
 
-						if(eachAngle) {
-							dial.activeIndex = dial.angle > 0 ? (360 - dial.angle % 360) / eachAngle : -(dial.angle % 360) / eachAngle;
-						}
+						this._activeIndex();
 					}
 				}
 			}
@@ -592,9 +579,7 @@
 				// 旋转转盘
 				dial._rotate(dial.angle = angle);
 				// 旋转块元素
-				if(config.useBlockAlwaysUp) {
-					dial._alwaysUp();
-				}
+				dial._alwaysUp();
 			}
 		},
 
@@ -603,6 +588,17 @@
 				dY = point.y - center.y;
 				
 			return Math.round(Math.atan2(dY, dX) * 180 / Math.PI);
+		},
+
+		_activeIndex: function () {
+			var eachAngle = this.config.eachAngle,
+				totalSlideAngle = this.angle - this.config.initAngle;
+
+			// 如果块角度存在，表示支持点击块元素旋转。
+			if(eachAngle) {
+				// 计算中心轴块元素的下标。当滑动角度大于0，说明是顺时针方向旋转。计算公式为(360 - 滑动角度取余) / 单位块角度。否则用滑动角度取余再除以单位块角度，逆时针方向为负数，加上负号转成正数。
+				this.activeIndex = totalSlideAngle > 0 ? (360 - totalSlideAngle % 360) / eachAngle : -(totalSlideAngle % 360) / eachAngle;
+			}
 		},
 
 		slideTo: function (index) {
@@ -631,13 +627,9 @@
 
 			this._rotate(this.angle += slideAngle);
 
-			if(config.useBlockAlwaysUp) {
-				this._alwaysUp();
-			}
+			this._alwaysUp();
 
-			if(eachAngle) {
-				this.activeIndex = this.angle > 0 ? (360 - this.angle % 360) / eachAngle : -(this.angle % 360) / eachAngle;
-			}
+			this._activeIndex();
 		},
 
 		lock: function () {
@@ -672,20 +664,13 @@
 
 			function autoPlay() {
 				this._rotate( (this.angle += reverse ? slideAngle : -slideAngle) );
-
-				if(this.config.useBlockAlwaysUp) {
-					this._alwaysUp();
-				}
+				this._alwaysUp();
 			}
 
 			function start(_this) {
 				_this.timer = setInterval(function () {
 					autoPlay.call(_this);
 				}, time || 1000);
-				
-				if(eachAngle) {
-					_this.activeIndex = _this.angle > 0 ? (360 - _this.angle % 360) / eachAngle : -(_this.angle % 360) / eachAngle;
-				}
 			}
 			
 			this.stop();
@@ -723,9 +708,7 @@
 
 			this._rotate( angle += slideAngle );
 
-			if(this.config.useBlockAlwaysUp) {
-				this._alwaysUp();
-			}
+			this._alwaysUp();
 
 			if(!this.config.oneStep) {
 				// 记录总滑动角度
@@ -775,9 +758,7 @@
 				this._alwaysUp();
 			}
 
-			if(eachAngle) {
-				this.activeIndex = this.angle > 0 ? (360 - this.angle % 360) / eachAngle : -(this.angle % 360) / eachAngle;
-			}
+			this._activeIndex();
 		}
 	});
 

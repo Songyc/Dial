@@ -459,7 +459,7 @@
 
 						dial._rotate(angle += curAngle - lAngle); 	// 调用dial._rotate(angle)旋转转盘
 
-						dial._alwaysUp();							// 调用dial._alwaysUp()设置块元素
+						dial._alwaysUp();							// 调用dial._alwaysUp()设置块元素旋转角度
 
 						if(!dial.config.oneStep) {					// 存储angle
 							dial.angle = angle;
@@ -535,11 +535,8 @@
 			if(list.length) {
 				for(var i = 0, l = list.length; i < l; i++) {
 					var dial = list[i];
-					if(this === dial) {
-						continue;
-					}
 
-					if(dial.config.link) {
+					if(dial.config.link && this !== dial) {
 						clearStep(dial, this.slideAngle);
 
 						this._activeIndex();
@@ -594,9 +591,8 @@
 			var eachAngle = this.config.eachAngle,
 				totalSlideAngle = this.angle - this.config.initAngle;
 
-			// 如果块角度存在，表示支持点击块元素旋转。
+			// 如果块角度存在，表示支持点击块元素旋转。计算中心轴块元素的下标。当滑动角度大于0，说明是顺时针方向旋转。计算公式为(360 - 滑动角度取余) / 单位块角度。否则用滑动角度取余再除以单位块角度，逆时针方向为负数，加上负号转成正数。
 			if(eachAngle) {
-				// 计算中心轴块元素的下标。当滑动角度大于0，说明是顺时针方向旋转。计算公式为(360 - 滑动角度取余) / 单位块角度。否则用滑动角度取余再除以单位块角度，逆时针方向为负数，加上负号转成正数。
 				this.activeIndex = totalSlideAngle > 0 ? (360 - totalSlideAngle % 360) / eachAngle : -(totalSlideAngle % 360) / eachAngle;
 			}
 		},
@@ -612,7 +608,6 @@
 				return;
 			}
 
-			// 如果
 			if(index < activeIndex) {
 				slideAngle = (index - (activeIndex - config.block.length)) * slideAngle;
 			}else {

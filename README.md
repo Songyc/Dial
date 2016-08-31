@@ -36,6 +36,7 @@
 *	.next Function - 调用.next()方法会旋转到下一个块元素的位置。
 
 ##例子
+
     ##HTML结构
     <div class="tab-ctrl" id="Jtab_ctrl">
         <div class="block">1</div>

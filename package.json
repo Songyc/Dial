@@ -1,0 +1,25 @@
+{
+  "name": "dial",
+  "version": "1.0.0",
+  "description": "移动端使用的转盘插件",
+  "main": "dist/js/Dial.js",
+  "style": "dist/css/Dial.css",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Songyc/Dial.git"
+  },
+  "keywords": ["mobile", "dial"],
+  "author": "songyingchun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Songyc/Dial/issues"
+  },
+  "homepage": "https://github.com/Songyc/Dial#readme",
+  "dependencies": {
+    "jquery": "~3.1.0",
+    "commitizen": ""
+  }
+}

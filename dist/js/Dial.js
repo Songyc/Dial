@@ -1,11 +1,10 @@
 (function (window, undefined) {
 	'use strict';
 
-	var doc = document,
+	var document = window.document,
 		touchstart = 'touchstart',
 	    touchmove = 'touchmove',
 	    touchend = 'touchend',
-		emtpy = function (){},
 
 		_slice = Array.prototype.slice,
 		_hasOwn = Object.prototype.hasOwnProperty,
@@ -15,7 +14,7 @@
 	var Dial = function (options) {
 	 	this.config = this._extend({}, Dial.config, options);
 	 	this._init();
-	}
+	};
 
 	Dial.config = {
 		initAngle: 0, 					// 设置转盘开始的角度
@@ -40,7 +39,7 @@
 		onSlideStart: null,		 		// 触摸事件开始时执行	
 		onSlideMove: null,				// 触摸滑动过程中执行
 		onSlideEnd: null				// 触摸事件结束后执行
-	}
+	};
 
 	Dial.prototype = {
 		constructor: Dial,
@@ -108,9 +107,8 @@
 			}
 		},
 		// 初始化方法。修正选项，保存属性，设置转盘、所有块元素位置。
-		_init: function (options) {
-			var self = this,
-				config = this.config,
+		_init: function () {
+			var config = this.config,
 				el = config.target,
 				block = config.block,
 				eachAngle;
@@ -156,7 +154,7 @@
 						if(config.useBlockPosition) {		// 如果支持块元素定位，则遍历所有块元素，设置top, left, margin和transform属性。设置transform属性前，先将角度转成弧度。再用半径乘以三角函数。
 							var width, height, 
 								radius = config.radius, 
-								ele, x, y, rs = '', rotate;
+								ele, x, y, rotate;
 
 							config.block = block; 						
 							// 块角度
@@ -165,8 +163,8 @@
 							for(var i = 0, l = block.length; i < l; i++) {
 								ele = block[i];
 
-								width = parseFloat(getComputedStyle(ele, null).width || 0);
-								height = parseFloat(getComputedStyle(ele, null).height || 0);
+								width = parseFloat(window.getComputedStyle(ele, null).width || 0);
+								height = parseFloat(window.getComputedStyle(ele, null).height || 0);
 
 								ele.style.position = 'absolute';
 								ele.style.left = '50%';
@@ -186,7 +184,7 @@
 								this._transform(ele, {translate: {x: x, y: y}, rotate: rotate}, false);
 
 								// 存储初始块元素位置属性
-								this._data(ele, {"translate": {x: x, y: y}, rotate: rotate, target: ele});
+								this._data(ele, {translate: {x: x, y: y}, rotate: rotate, target: ele});
 
 							}
 
@@ -214,11 +212,11 @@
 		// ._position(el)方法设置转盘的位置
 		_position: function (el) {
 			var p = this.config.position,
-				pi, pos, t;
+				pos, t;
 
 			pos = {
-				left: "0%",
-				right: "100%",
+				left: '0%',
+				right: '100%',
 				top: '0%',
 				bottom: '100%',
 				center: '50%'
@@ -252,12 +250,12 @@
 			return {
 				x: gbcr.right - gbcr.width / 2,
 				y: gbcr.bottom - gbcr.height / 2
-			}
+			};
 		},
 		//  ._data(el, name, data)方法用于缓存数据。支持._data(el, name, data)或者._data(el, obj)。如果第二个参数是对象，则将它合并到数据缓存对象中。
 		_data: function (el, name, data) {
 			var cache = this.cache,
-				id, ec, key;
+				id, ec;
 
 			if(!cache) {
 				this.cache = cache = {};
@@ -265,7 +263,7 @@
 
 			id = el.uuid;
 
-			if(id == null) {
+			if(id === undefined) {
 				el.uuid = id = this.uuid++;
 			}
 
@@ -275,15 +273,15 @@
 				ec = cache[id] = {};
 			}
 
-			if(name == null) {
+			if(name === undefined) {
 				delete cache[id];
 			}
 
-			if(name != null) {
+			if(name !== undefined) {
 
 				if(typeof name === 'string') {
 
-					if(data != null) {
+					if(data !== undefined) {
 						ec[name] = data;	
 					}
 
@@ -316,72 +314,77 @@
 		// ._transform(el, prop, useTransition)方法设置元素el的transform属性，prop为动画对象集。会先将prop对象的动画键值对转成字串符，拼接后再设置transform属性。
 		_transform: (function () {
 	        var s, rst, key,
-	        	rfixe = /e-/g,
-	        	// 自定义方法集cf, 有四个方法translate, rotate, scale, skew, 分别将传入的参数转成字符串，最后返回。转换前先调用fixE(t)函数检测字符是否有"e-", 表示小数点后十几位。如果有，直接设置为0。
-	            cf = {
-	                translate: function (t) {
-	                    if(typeof t === 'number') {
-	                        t = { x: t, y: t }
-	                    }
+	        	rfixe = /e-/g, cf;
 
-	                    t = fixE(t);
-
-	                    return ("translate(" + t.x + "px, " + t.y + "px)");
-	                },
-	                scale: function (t) {
-
-	                    if(typeof t === 'number') {
-	                        t = "scale(" + t + ")";
-	                    }else if(typeof t === 'object'){
-
-	                        t += "scale(" + t.x + ", " + t.y + ")";
-	                    }
-
-	                    return fixE(t);
-	                }
-	            };
-
-	            "skew rotate".split(" ").forEach(function (item, i) {
-	            	cf[item] = function (t) {
-	            		return ( item + "(" + fixE(t) + "deg)" );
-	            	}
-	            });
-
-	        function fixE(t) { 			
+        	function fixE(t) { 			
 			    if(typeof t === 'object') { 		// 如果参数t为对象，遍历t, 再次调用fixE(t), 每个属性值为参数。
 			        for(var key in t) {
-			            t[key] = fixE(t[key]);
+			        	if(t.hasOwnProperty(key)) {
+			            	t[key] = fixE(t[key]);
+			        	}
 			        }
 
 			        return t;
 			    }
 
 			    if(typeof t === 'number') { 		// 如果参数t为数字，转成字符串
-			        t += "";
+			        t += '';
 			    }
 
 			    if(rfixe.test(t)) {					// 如果参数t有'e-'，转成'0'
-			        t = "0";
+			        t = '0';
 			    }
 			    return t;
 			}
+
+        	// 自定义方法集cf, 有四个方法translate, rotate, scale, skew, 分别将传入的参数转成字符串，最后返回。转换前先调用fixE(t)函数检测字符是否有"e-", 表示小数点后十几位。如果有，直接设置为0。
+            cf = {
+                translate: function (t) {
+                    if(typeof t === 'number') {
+                        t = { x: t, y: t };
+                    }
+
+                    t = fixE(t);
+
+                    return ('translate(' + t.x + 'px, ' + t.y + 'px)');
+                },
+                scale: function (t) {
+
+                    if(typeof t === 'number') {
+                        t = 'scale(' + t + ')';
+                    }else if(typeof t === 'object'){
+
+                        t += 'scale(' + t.x + ', ' + t.y + ')';
+                    }
+
+                    return fixE(t);
+
+                }
+            };
+
+            'skew rotate'.split(' ').forEach(function (item) {
+            	cf[item] = function (t) {
+            		return ( item + '(' + fixE(t) + 'deg)' );
+            	};
+            });
 
 	        return function (el, prop, useTransition) {
 	        	rst = []; 							// 先清空结果集
 
 	            for(key in prop) { 					// 遍历参数prop属性对象
-
-	            	if(prop[key] === true) { 		// 如果属性值为true, 说明要加上之前设置的属性。调用this._data(el, key)方法获取key对应的缓存，默认为0。因为transform属性是个混合属性，可能之前已经设置了。如果要加上后续属性，先将之前设置的属性提取出来。
-	            		prop[key] = this._data(el, key) || 0;
+	            	if(prop.hasOwnProperty(key)) {
+		            	if(prop[key] === true) { 		// 如果属性值为true, 说明要加上之前设置的属性。调用this._data(el, key)方法获取key对应的缓存，默认为0。因为transform属性是个混合属性，可能之前已经设置了。如果要加上后续属性，先将之前设置的属性提取出来。
+		            		prop[key] = this._data(el, key) || 0;
+		            	}
+		            		
+		                s = cf[key].call(this, prop[key], el); 	// 将属性值转成字符串，并且放入结果集。
+		                rst.push(s);
 	            	}
-	            		
-	                s = cf[key].call(this, prop[key], el); 	// 将属性值转成字符串，并且放入结果集。
-	                rst.push(s);
 	            }
 
 	            this._data(el, prop);				// 缓存属性对象
 
-	            s = rst.join(" ");					// 将结果集转成字符串
+	            s = rst.join(' ');					// 将结果集转成字符串
 	           
 	            el.style.transform = s; 			// 设置transform属性
 	            el.style.webkitTransform = s;
@@ -390,7 +393,7 @@
 		        	el.style.transition = 'transform .3s ease-in'; 
 		        	el.style.webkitTransition = '-webkit-transform .3s ease-in';
 	            }
-	        }
+	        };
 	    })(),
 	    // ._start(e)方法记录开始点击坐标，获取开始夹角，绑定事件和触发开始滑动回调函数。
 		_start: function (e) {
@@ -418,7 +421,7 @@
 			var point = e.touches[0],
 				curAngle, lAngle,
 				startAngle = this.startAngle,
-				angle = this.angle;
+				angle;
 
 			e.preventDefault();
 			
@@ -438,8 +441,7 @@
 			}
 
 			this._slide(function () {
-				var eachAngle = this.config.eachAngle,		
-					angle = this.angle;
+				angle = this.angle;
 
 				this._rotate(angle += curAngle - lAngle); 	// 调用dial._rotate(angle)旋转转盘
 				if(!this.config.oneStep) {					// 存储angle
@@ -629,14 +631,13 @@
 			this._init();
 		},
 
-		destroy: function (data) {
+		destroy: function () {
 			this._unBindEvents();
 			Dial.list.splice(this, 1);
 		},
 
 		start: function (time, reverse) {
-			var self = this,
-				config = this.config,
+			var config = this.config,
 				eachAngle = config.eachAngle,
 				step = config.step,
 				slideAngle = step * eachAngle;
@@ -647,7 +648,7 @@
 			}
 
 			function start(dial) {
-				dial.timer = setInterval(function () {
+				dial.timer = window.setInterval(function () {
 					dial._rotate( (dial.angle += reverse ? slideAngle : -slideAngle) );
 					dial._alwaysUp();
 				}, time || 1000);
@@ -673,7 +674,6 @@
 
 		slideMove: function (slideAngle) {
 			var config = this.config,
-				eachAngle = config.eachAngle,
 				angle = this.angle;
 
 			this._slide(function () {
@@ -691,14 +691,14 @@
 		getIndex: function () {
 			return this.activeIndex;
 		}
-	}
+	};
 
 	// 公共方法Dial.prototype._translate, Dial.prototype._rotate, Dial.prototype._scale, Dial.prototype._skew。底层调用Dial.prototype.matrix统一处理。
-	"translate rotate scale skew".split(" ").forEach(function (item, i) {
-		Dial.prototype["_" + item] = function (prop, el, useTransition) {
+	'translate rotate scale skew'.split(' ').forEach(function (item) {
+		Dial.prototype['_' + item] = function (prop, el, useTransition) {
 			var obj = {};
 			// 如果未传入参数prop，直接返回。
-			if(prop == null) {
+			if(prop === undefined) {
 				return;
 			}
 			// 修正参数el, 默认为this.target转盘元素
@@ -711,18 +711,22 @@
 			}
 
 			this._transform(el, obj, useTransition); 					// 调用this._transform(el, prop)统一处理。
-		}
+		};
 	});
 
 	// 公共方法Dial.prototype.next, Dial.prototype.prev
-	"next prev".split(" ").forEach(function (item, i) {
+	'next prev'.split(' ').forEach(function (item) {
 		Dial.prototype[item] = function () {
 			var config = this.config,
 				eachAngle = config.eachAngle,
 				step = config.step,
 				slideAngle = step * eachAngle;
 
-			item === 'prev' ? this.angle += slideAngle : this.angle -= slideAngle;
+			if(item === 'prev') {
+				this.angle += slideAngle;
+			}else {
+				this.angle -= slideAngle;
+			}
 
 			this._rotate(this.angle);
 
@@ -731,17 +735,17 @@
 			}
 
 			this._activeIndex();
-		}
+		};
 	});
 
-	if (typeof module === "object" && module && typeof module.exports === "object") {
+	if (typeof module === 'object' && module && typeof module.exports === 'object') {
         module.exports = Dial;
     } else {
 
         window.Dial = Dial;
 
-        if (typeof define === "function" && define.amd) {
-            define("dial", [], function() {
+        if (typeof define === 'function' && define.amd) {
+            define('dial', [], function() {
                 return Dial;
             });
         }

@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3, minimum-scale=1.0,user-scalable=no,minimal-ui">
 <link rel="stylesheet" href="../dist/css/style.css">
 <style>
-.b-wrap{padding-top:400px;}
-.button{width: 300px; font-size: 26px;display: block; margin:0 auto; margin-bottom:20px;}
+.b-wrap{padding-top:450px;overflow: hidden;}
+.button{background: #F90; color: #fff; display: block; width: 200px; text-decoration: none; padding: 10px 15px; border-radius: 7px; text-align: center; font-size: 22px; margin:0 auto; margin-bottom:20px; }
 </style>
 <script type="text/javascript">
 if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
@@ -38,9 +38,9 @@ if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
     </div>
 
     <div class="b-wrap">
-        <button class="button button1">自动旋转</button>
-        <button class="button button2">时间间隔4秒</button>
-        <button class="button button3">逆时针旋转</button>
+        <div class="button button1">自动旋转</div>
+        <div class="button button2">时间间隔4秒</div>
+        <div class="button button3">逆时针旋转</div>
     </div>
 </div>
 
@@ -50,7 +50,8 @@ var dial = new Dial({
     target: "#Jtab_ctrl",
     block: '#Jtab_ctrl .block',
     position: 'center top',
-    radius: 280
+    radius: 280,
+    initAngle: -180
 });
 
 document.querySelector(".button1").onclick = function () {

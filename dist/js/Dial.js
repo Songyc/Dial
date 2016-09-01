@@ -31,15 +31,15 @@
 		useBlockToAngle: false,			// 块元素是否一直保持向外
 		useClick: true, 				// 点击块元素，转盘是否能旋转
  
-		step: 1, 						// 转盘每次转动的单位块角度
+		step: 1, 						// 转盘旋转的块单位
 		oneStep: false,					// 是否以每次转动只是单位块角度
 		lock: false,					// 是否锁转盘
 		autoPlay: false,				// 是否自动旋转
 		link: false, 					// 是否支持联动。如果有多个转盘时，转动一致
 
-		onSlideStart: null,		 		// 触摸事件开始时执行回调函数	
-		onSlideMove: null,				// 触摸滑动过程中执行回调函数	
-		onSlideEnd: null				// 触摸事件结束后执行回调函数
+		onSlideStart: null,		 		// 触摸事件开始时执行	
+		onSlideMove: null,				// 触摸滑动过程中执行
+		onSlideEnd: null				// 触摸事件结束后执行
 	}
 
 	Dial.prototype = {
@@ -55,7 +55,7 @@
 					this._end(e); break;
 			}
 		},
-
+		// 合并源对象到目标对象上，支持合并多个源对象。如果最后一个参数为true，则支持深拷贝。
 		_extend: function (target, src) {
 			var args = _slice.call(arguments),
 				len = args.length,
@@ -91,7 +91,7 @@
 			}
 			return target;
 		},
-
+		// 与选项useBlockAlwaysUp对应的方法。设置所有块元素旋转角度与转盘旋转角度相反，并记录当前块元素的旋转角度。
 		_alwaysUp: function (useTransition) {
 			if(!this.config.useBlockAlwaysUp) {
 				return;	
@@ -101,12 +101,13 @@
 			if(!b || !b.length) {
 				return;
 			}
-			// 遍历块元素，调用this._rotate(prop, el)设置每个块元素。translate为true，表示要加上之前设置的translate属性
+			// 遍历块元素，调用this._transform(prop, el)设置每个块元素。translate为true，表示要加上之前设置的translate属性
 			for(var i = 0, l = b.length; i < l; i++) {
-				this._rotate({translate: true, rotate: -this.angle}, b[i], useTransition);
+				this._transform(b[i], {translate: true, rotate: -this.angle}, useTransition);
+				this._data(b[i], {rotate: -this.angle});
 			}
 		},
-
+		// 初始化方法。修正选项，保存属性，设置转盘、所有块元素位置。
 		_init: function (options) {
 			var self = this,
 				config = this.config,
@@ -129,22 +130,22 @@
 					this._rotate(config.initAngle);			// 按照初始角度旋转转盘
 					this.activeIndex = 0;					// 设置中心轴上的块元素的下标，初始值为0。
 
-					if(config.useBlockToAngle) { 			// 如果支持块元素与角度方向一致
-						config.useBlockAlwaysUp = false;	// 则将config.useBlockAlwaysUp设置为false,表示块元素不总是向上。
+					if(config.useBlockToAngle) { 			// 如果选项useBlockToAngle为true, 说明支持块元素与角度方向一致, 则不支持块元素总是向上，修正选项useBlockAlwaysUp为false。
+						config.useBlockAlwaysUp = false;	
 					}
 
-					if(config.usePosition) {				// 如果支持转盘自动定位
+					if(config.usePosition) {				// 如果选项usePosition为true，表示支持转盘自动定位。
 						this._position(el); 				// 调用this._position(el)方法自动定位
 					}
 
 					this.center = this._center(el);			// 记录转盘中心位置
 
-					if(typeof block === 'string') { 		// 如果block为字符串
-						try{ 								// 尝试获取表达式为block的所有元素。如果block为空字符串，则会抛出错误。
+					if(typeof block === 'string') { 		// 如果选项block为字符串
+						try{ 								// 尝试获取表达式为block的所有元素。如果block为空字符串，则会抛出异常。所以要用try,catch"吸收"异常。
 							block = document.querySelectorAll(block);
 						}catch(e) {}
 
-						if(!block.length) {					// 如果获取不到块元素，将单位块角度设置为false，不再支持定位块元素，块元素总是向上，块元素与转盘滑动角度一致。
+						if(!block.length) {					// 如果获取不到块元素，说明没有块元素。与块元素有关的选项会无效。包括每次旋转的块单位，定位块元素，块元素总是向上，块元素与转盘滑动角度一致。
 							config.step = config.useBlockPosition = config.useBlockAlwaysUp = config.useBlockToAngle = false;
 						}
 
@@ -155,7 +156,7 @@
 						if(config.useBlockPosition) {		// 如果支持块元素定位，则遍历所有块元素，设置top, left, margin和transform属性。设置transform属性前，先将角度转成弧度。再用半径乘以三角函数。
 							var width, height, 
 								radius = config.radius, 
-								ele, x, y, rs = '';
+								ele, x, y, rs = '', rotate;
 
 							config.block = block; 						
 							// 块角度
@@ -177,22 +178,21 @@
 								y =  -radius * (Math.cos( eachAngle * i * Math.PI / 180 ));	
 
 								if(config.useBlockToAngle) {
-									rs = ' rotate(' + (eachAngle * i) + 'deg)';
+									rotate = eachAngle * i;
+								}else if(config.useBlockAlwaysUp) {
+									rotate = -this.angle;
 								}
-
-								this._alwaysUp(false);
-
-								ele.style.transform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
-								ele.style.webkitTransform = 'translate(' + x + 'px, ' + y + 'px)' + rs;
+								// 调用._transform(ele, prop, useTransition)方法旋转块元素，第三个参数为false表示不使用过渡动画。
+								this._transform(ele, {translate: {x: x, y: y}, rotate: rotate}, false);
 
 								// 存储初始块元素位置属性
-								this._data(ele, {"translate": {x: x, y: y}, target: ele});
+								this._data(ele, {"translate": {x: x, y: y}, rotate: rotate, target: ele});
+
 							}
 
 							config.eachAngle = eachAngle;
 						}
 					}
-
 				}
 				this.hasInited = true;
 
@@ -202,16 +202,16 @@
 
 				Dial.list.push(this);
 			}
-			// 如果不支持锁屏，则绑定触屏事件
+			// 如果选项lock为false，表示不锁屏，则绑定触屏事件
 			if(!config.lock) {
 				this._bind(touchstart);
 			}
-			// 如果支持自动播放，调用this.start()自动播放。
+			// 如果支持自动旋转，调用this.start()自动旋转。
 			if(config.autoPlay) {
 				this.start();
 			}
 		},
-
+		// ._position(el)方法设置转盘的位置
 		_position: function (el) {
 			var p = this.config.position,
 				pi, pos, t;
@@ -245,7 +245,7 @@
 		_unbind: function (type, el, bubble) {
 			(el || this.target).removeEventListener(type, this, !!bubble);
 		},
-
+		// ._center(el)获取元素el的中心坐标
 		_center: function(el) {
 			var gbcr = el.getBoundingClientRect(el);
 
@@ -254,7 +254,7 @@
 				y: gbcr.bottom - gbcr.height / 2
 			}
 		},
-
+		//  ._data(el, name, data)方法用于缓存数据。支持._data(el, name, data)或者._data(el, obj)。如果第二个参数是对象，则将它合并到数据缓存对象中。
 		_data: function (el, name, data) {
 			var cache = this.cache,
 				id, ec, key;
@@ -295,8 +295,26 @@
 				}
 			}
 		},
-
-		_matrix: (function () {
+		// ._slide(fn)方法。先执行当前转盘的函数，再执行其它联动转盘的函数。
+		_slide: function (fn) {
+			fn.call(this);
+			this._link(fn);
+		},
+		// ._line(fn)方法用于执行其它联动转盘的函数
+		_link: function (fn) {
+			// 联动其它转盘。获取转盘列表。
+			var list = Dial.list; 		
+			if(list.length) {
+				for(var i = 0, l = list.length; i < l; i++) {
+					var dial = list[i];
+					if(dial.config.link && this !== dial) {
+						fn.call(dial);
+					}
+				}
+			}
+		},
+		// ._transform(el, prop, useTransition)方法设置元素el的transform属性，prop为动画对象集。会先将prop对象的动画键值对转成字串符，拼接后再设置transform属性。
+		_transform: (function () {
 	        var s, rst, key,
 	        	rfixe = /e-/g,
 	        	// 自定义方法集cf, 有四个方法translate, rotate, scale, skew, 分别将传入的参数转成字符串，最后返回。转换前先调用fixE(t)函数检测字符是否有"e-", 表示小数点后十几位。如果有，直接设置为0。
@@ -310,10 +328,6 @@
 
 	                    return ("translate(" + t.x + "px, " + t.y + "px)");
 	                },
-	                rotate: function (t) {
-
-	                    return ("rotate(" + fixE(t) + "deg)");
-	                },
 	                scale: function (t) {
 
 	                    if(typeof t === 'number') {
@@ -324,14 +338,16 @@
 	                    }
 
 	                    return fixE(t);
-	                },
-	                skew: function (t) {
-	                    return ("skew(" + fixE(t) + "deg)");
 	                }
 	            };
 
-	        function fixE(t) { 			
+	            "skew rotate".split(" ").forEach(function (item, i) {
+	            	cf[item] = function (t) {
+	            		return ( item + "(" + fixE(t) + "deg)" );
+	            	}
+	            });
 
+	        function fixE(t) { 			
 			    if(typeof t === 'object') { 		// 如果参数t为对象，遍历t, 再次调用fixE(t), 每个属性值为参数。
 			        for(var key in t) {
 			            t[key] = fixE(t[key]);
@@ -376,7 +392,7 @@
 	            }
 	        }
 	    })(),
-
+	    // ._start(e)方法记录开始点击坐标，获取开始夹角，绑定事件和触发开始滑动回调函数。
 		_start: function (e) {
 			var point = e.touches[0];
 
@@ -397,7 +413,7 @@
 				this.config.onSlideStart.call(this);
 			}
 		},
-
+		// ._move(e)方法获取并修正滑动点夹角，调用._slide(fn)方法旋转当前转盘和联动的转盘，最后记录属性和触发滑动过程回调函数。
 		_move: function (e) {
 			var point = e.touches[0],
 				curAngle, lAngle,
@@ -421,16 +437,17 @@
 				curAngle += 360;
 			}
 
-			// 计算滑动的角度，滑动角度 = 当前角度 - 开始角度。之前的滑动角度再加上本次的滑动角度。旋转转盘
-			this._rotate( (angle += curAngle - lAngle) );
+			this._slide(function () {
+				var eachAngle = this.config.eachAngle,		
+					angle = this.angle;
 
-			// 调用Dial.prototype._alwaysUp()方法设置角度。
-			this._alwaysUp();
-
-			// 如果不支持每次只转动以单位块角度，则记录转盘滑动角度。
-			if(!this.config.oneStep) { 		
-				this.angle = angle;
-			}
+				this._rotate(angle += curAngle - lAngle); 	// 调用dial._rotate(angle)旋转转盘
+				if(!this.config.oneStep) {					// 存储angle
+					this.angle = angle;
+				}
+				this._alwaysUp();							// 调用dial._alwaysUp()设置块元素旋转角度
+			});
+			
 			// 记录本次滑动角度
 			this.slideAngle = curAngle - startAngle;
 
@@ -446,29 +463,8 @@
 			if(this.config.onSlideMove) {
 				this.config.onSlideMove.call(this);
 			}
-			// 联动其它转盘。获取转盘列表。存储了实例化的转盘对象。
-			var list = Dial.list;
-			if(list.length) {
-				for(var i = 0, l = list.length; i < l; i++) {		// 遍历转盘列表数组
-					var dial = list[i];						
-
-					if(dial.config.link && this !== dial) {			// 如果转盘对象支持联动并且不是当前转盘对象。因为要联动其它转盘，不需要联动自己。
-						
-						var eachAngle = dial.config.eachAngle,		
-							angle = dial.angle;
-
-						dial._rotate(angle += curAngle - lAngle); 	// 调用dial._rotate(angle)旋转转盘
-
-						dial._alwaysUp();							// 调用dial._alwaysUp()设置块元素旋转角度
-
-						if(!dial.config.oneStep) {					// 存储angle
-							dial.angle = angle;
-						}
-					}
-				}
-			}
 		},
-
+		// ._end(e)方法处理模拟点击块元素或者触摸滑动转盘的情况，最后记录属性和触发滑动结束回调函数。
 		_end: function (e) {
 			var point = e.touches[0] ? e.touches[0] : e.changedTouches[0],
 				config = this.config, cb, l,
@@ -508,19 +504,21 @@
 
 						this.slideAngle = slideAngle;
 
-						// 之前滑动角度加上本次滑动角度。调用this._rotate(angle)方法旋转
-						this._rotate( (this.angle += slideAngle) );
-
-						this._alwaysUp();
-						// 跳出本次循环
+						this._slide(function () {
+							this._rotate(this.angle += slideAngle);
+							this._alwaysUp();
+							this._activeIndex();
+						});
 						break;
 					}
 				}
 			}else if(config.step) { 	// 如果 c.step为true。表示转盘要以块角度为单位滑动。		
-				clearStep(this, this.slideAngle); 		// 调用clearStep(dial, slideAngle)计算滑动角度，旋转转盘和块元素
+				var self = this;
+				this._slide(function () {
+					this._step(self.slideAngle); 			// 调用._step(dial, slideAngle)计算滑动角度，旋转转盘和块元素
+					this._activeIndex();
+				});
 			}
-
-			this._activeIndex();
 
 			if(this.config.onSlideEnd) {
 				this.config.onSlideEnd.call(this);
@@ -530,54 +528,41 @@
 			this.move = false;			// 标记this.move为false，指示转盘不是在滑动状态
 			this.slideAngle = 0;
 			this.slideMoveAngle = 0;
+		},
 
-			var list = Dial.list;
-			if(list.length) {
-				for(var i = 0, l = list.length; i < l; i++) {
-					var dial = list[i];
+		_step: function (slideAngle) {
+			var angle = this.angle,
+				config = this.config,
+				eachAngle = config.eachAngle;
 
-					if(dial.config.link && this !== dial) {
-						clearStep(dial, this.slideAngle);
+			// 修正变量块角度eachAngle。c.step表示旋转的块数量
+			eachAngle *= this.config.step;
 
-						this._activeIndex();
-					}
-				}
-			}
+			// 如果每次转动是单位块角度
+			if(config.oneStep) {
+				// 先用本次滑动的角度计算滑动的块次数
+				var	steps = Math.round( slideAngle / eachAngle );
 
-			function clearStep(dial, slideAngle) {
-				var angle = dial.angle,
-					config = dial.config,
-					eachAngle = config.eachAngle;
-
-				// 修正变量块角度eachAngle。c.step表示旋转的块数量
-				eachAngle *= dial.config.step;
-
-				// 如果每次转动是单位块角度
-				if(config.oneStep) {
-					// 先用本次滑动的角度计算滑动的块次数
-					var	steps = Math.round( slideAngle / eachAngle );
-
-					// 如果滑动块次数为1或者大于1，滑动的角度可能超出块角度，要将滑动角度修正为块角度，表示每次最多只能滑动1单位块角度。如果滑动块次数小于0，滑动的角度可能超出块角度，要将滑动角度修正为块角度，表示每次最多只能滑动-1单位块角度。如果steps为0，表示不需要滑动。设置滑动角度为0。
-					if(steps > 0) {
-						slideAngle = eachAngle; 
-					}else if(steps < 0) {
-						slideAngle = -eachAngle;
-					}else {
-						slideAngle = 0;
-					}
-
-					// 之前的滑动角度加上本次的滑动角度
-					angle += slideAngle;
-
+				// 如果滑动块次数为1或者大于1，滑动的角度可能超出块角度，要将滑动角度修正为块角度，表示每次最多只能滑动1单位块角度。如果滑动块次数小于0，滑动的角度可能超出块角度，要将滑动角度修正为块角度，表示每次最多只能滑动-1单位块角度。如果steps为0，表示不需要滑动。设置滑动角度为0。
+				if(steps > 0) {
+					slideAngle = eachAngle; 
+				}else if(steps < 0) {
+					slideAngle = -eachAngle;
 				}else {
-					// 计算滑动块角度。先将滑动角度除以块角度，再四舍五入，最后乘以块角度。
-					angle = dial.dialInitAngle + Math.round( (angle - dial.dialInitAngle) / eachAngle ) * eachAngle;
+					slideAngle = 0;
 				}
-				// 旋转转盘
-				dial._rotate(dial.angle = angle);
-				// 旋转块元素
-				dial._alwaysUp();
+
+				// 之前的滑动角度加上本次的滑动角度
+				angle += slideAngle;
+
+			}else {
+				// 计算滑动块角度。先将滑动角度除以块角度，再四舍五入，最后乘以块角度。
+				angle = this.dialInitAngle + Math.round( (angle - this.dialInitAngle) / eachAngle ) * eachAngle;
 			}
+			// 旋转转盘
+			this._rotate(this.angle = angle);
+			// 旋转块元素
+			this._alwaysUp();
 		},
 
 		_angle: function (point, center) {
@@ -619,12 +604,11 @@
 			}else{
 				slideAngle = 360 - slideAngle;
 			}
-
-			this._rotate(this.angle += slideAngle);
-
-			this._alwaysUp();
-
-			this._activeIndex();
+			this._slide(function () {
+				this._rotate(this.angle += slideAngle);
+				this._alwaysUp();
+				this._activeIndex();
+			});
 		},
 
 		lock: function () {
@@ -657,14 +641,10 @@
 				time = undefined;
 			}
 
-			function autoPlay() {
-				this._rotate( (this.angle += reverse ? slideAngle : -slideAngle) );
-				this._alwaysUp();
-			}
-
-			function start(_this) {
-				_this.timer = setInterval(function () {
-					autoPlay.call(_this);
+			function start(dial) {
+				dial.timer = setInterval(function () {
+					dial._rotate( (dial.angle += reverse ? slideAngle : -slideAngle) );
+					dial._alwaysUp();
 				}, time || 1000);
 			}
 			
@@ -672,43 +652,35 @@
 
 			start(this);
 
-			var list = Dial.list;
-
-			if(list.length) {
-				for(var i = 0, l = list.length; i < l; i++) {
-					var dial = list[i];
-					if(dial.config.link && this !== dial) {
-						start(dial);
-					}
-				}
-			}
+			this._link(function () {
+				start(this);
+			});
 		},
 
 		stop: function () {
-			var list = Dial.list;
-			if(list.length) {
-				for(var i = 0, l = list.length; i < l; i++) {
-					var dial = list[i];
-					if(dial.timer) {
-						clearInterval(dial.timer);
-					}
+			this._slide(function () {
+				if(this.timer) {
+					clearInterval(this.timer);
+					this.timer = null;
 				}
-			}
+			});
 		},
 
 		slideMove: function (slideAngle) {
 			var config = this.config,
 				eachAngle = config.eachAngle,
-				angle = this.angle;;
+				angle = this.angle;
 
-			this._rotate( angle += slideAngle );
-
-			this._alwaysUp();
-
-			if(!this.config.oneStep) {
-				// 记录总滑动角度
-				this.angle = angle;
-			}
+			this._slide(function () {
+				if(config.oneStep) {
+					this._step(slideAngle);
+					this._activeIndex();
+				}else {
+					this._rotate( angle += slideAngle );
+					this.angle = angle;
+					this._alwaysUp();
+				}
+			});
 		},
 
 		getIndex: function () {
@@ -733,7 +705,7 @@
 				this._extend(obj, prop); 								// 调用this._extend(target, src)方法将参数prop合并到obj对象中
 			}
 
-			this._matrix(el, obj, useTransition); 						// 调用this._matrix(el, prop)统一处理。
+			this._transform(el, obj, useTransition); 					// 调用this._transform(el, prop)统一处理。
 		}
 	});
 

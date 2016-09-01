@@ -5,7 +5,8 @@
   "main": "dist/js/Dial.js",
   "style": "dist/css/Dial.css",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -w -r 0"
   },
   "repository": {
     "type": "git",
@@ -16,20 +17,12 @@
     "dial"
   ],
   "author": "songyingchun",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Songyc/Dial/issues"
   },
   "homepage": "https://github.com/Songyc/Dial#readme",
   "dependencies": {
     "jquery": "~3.1.0"
-  },
-  "devDependencies": {
-    "cz-conventional-changelog": "^1.2.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   }
 }

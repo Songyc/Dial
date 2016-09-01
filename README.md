@@ -1,3 +1,4 @@
+#  [![NPM version][npm-image]]
 # Dial
 ####转盘插件
 

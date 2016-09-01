@@ -1,6 +1,3 @@
-#  [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage Status][coveralls-image]][coveralls-url]
-
-[![Join the chat at https://gitter.im/conventional-changelog/conventional-changelog](https://badges.gitter.im/conventional-changelog/conventional-changelog.svg)](https://gitter.im/conventional-changelog/conventional-changelog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 # Dial
 ####转盘插件
 

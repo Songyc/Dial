@@ -611,22 +611,27 @@
 			});
 		},
 
+		_unBindEvents: function () {
+			this._unbind(touchstart);
+			this._unbind(touchmove);
+			this._unbind(touchend);
+		},
+
 		lock: function () {
+			this._unBindEvents();
 			this.config.lock = true;
-			this.destroy();
 			this._init();
 		},
 
 		unLock: function () {
+			this._unBindEvents();
 			this.config.lock = false;
-			this.destroy();
 			this._init();
 		},
 
-		destroy: function () {
-			this._unbind(touchstart);
-			this._unbind(touchmove);
-			this._unbind(touchend);
+		destroy: function (data) {
+			this._unBindEvents();
+			Dial.list.splice(this, 1);
 		},
 
 		start: function (time, reverse) {

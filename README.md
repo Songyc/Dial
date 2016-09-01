@@ -37,7 +37,7 @@
 
 ##例子
 
-###HTML结构
+```html
     <div class="tab-ctrl" id="Jtab_ctrl">
         <div class="block">1</div>
         <div class="block">2</div>
@@ -48,11 +48,12 @@
         <div class="block">7</div>
         <div class="block">8</div>
     </div>
-
-###js
+```
+```js
     var dial = new Dial({
         target: "#Jtab_ctrl",
         block: '#Jtab_ctrl .block',
         position: 'center bottom',
         radius: 280
     });
+```

@@ -11,7 +11,10 @@
     "type": "git",
     "url": "https://github.com/Songyc/Dial.git"
   },
-  "keywords": ["mobile", "dial"],
+  "keywords": [
+    "mobile",
+    "dial"
+  ],
   "author": "songyingchun",
   "license": "ISC",
   "bugs": {
@@ -19,7 +22,14 @@
   },
   "homepage": "https://github.com/Songyc/Dial#readme",
   "dependencies": {
-    "jquery": "~3.1.0",
-    "commitizen": ""
+    "jquery": "~3.1.0"
+  },
+  "devDependencies": {
+    "cz-conventional-changelog": "^1.2.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

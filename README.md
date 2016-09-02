@@ -1,6 +1,9 @@
+[![Build Status](https://travis-ci.org/Songyc/Dial.svg?branch=master)](https://travis-ci.org/Songyc/Dial)
+[![devDependency Status](https://david-dm.org/Songyc/Dial/dev-status.svg)](https://david-dm.org/nolimits4web/swiper#info=devDependencies)
+
 # Dial
 ==========
-用于移动端的转盘插件
+>用于移动端的转盘插件
 
 ##选项
 ###块元素指类名为".block"的元素、块角度指每次旋转一个块元素的角度

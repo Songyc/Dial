@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Songyc/Dial.svg?branch=master)](https://travis-ci.org/Songyc/Dial)
-[![devDependency Status](https://david-dm.org/Songyc/Dial/dev-status.svg)](https://david-dm.org/Songyc/Dial#info=devDependencies)
+[![dependencies Status](https://david-dm.org/Songyc/Dial/status.png)](https://david-dm.org/Songyc/Dial)
 [![Flattr this git repo](http://button.flattr.com/flattr-badge-large.png)](https://flattr.com/submit/auto?fid=q2o2qe&url=https%3A%2F%2Fgithub.com%2FSongyc%2FDial)
 
 # Dial

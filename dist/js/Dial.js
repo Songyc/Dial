@@ -1,4 +1,3 @@
-
 (function (window, undefined) {
 	'use strict';
 
@@ -515,7 +514,7 @@
 						break;
 					}
 				}
-			}else if(config.step) { 	// 如果 c.step为true。表示转盘要以块角度为单位滑动。		
+			}else if(config.step) { 						// 如果 c.step为true。表示转盘要以块角度为单位滑动。		
 				var self = this;
 				this._slide(function () {
 					this._step(self.slideAngle); 			// 调用._step(dial, slideAngle)计算滑动角度，旋转转盘和块元素

@@ -1,3 +1,5 @@
 fis-conf.js
 node_modules
 *.log
+output
+test

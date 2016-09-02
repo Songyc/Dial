@@ -25,5 +25,6 @@
 	"laxcomma": false,
 	"loopfunc": true,
 	"onevar": false,
+	
 	"unused": true
 }

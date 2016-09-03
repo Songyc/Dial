@@ -1,5 +1,5 @@
 {
-  "name": "dial",
+  "name": "Dial",
   "version": "1.0.0",
   "description": "移动端使用的转盘插件",
   "main": "dist/js/Dial.js",

@@ -23,7 +23,7 @@
 *	useBlockPosition Boolean - 块元素是否自动定位。默认值为true。
 *	useTransition Boolean - 转盘是否使用过渡动画。默认值为true。
 *	useBlockAlwaysUp Boolean - 块元素是否一直保持向上。默认值为true。
-*	useBlockToAngle Boolean - 块元素是否一直保持与外。默认值为true。
+*	useBlockToAngle Boolean - 块元素是否一直保持向外。默认值为true。
 *	useClick Boolean - 点击块元素，转盘是否能旋转。默认值为true。
 *	onSlideStart Function - 转盘滑动前触发。
 *	onSlideMove Function - 转盘滑动时触发。

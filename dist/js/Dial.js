@@ -54,7 +54,7 @@
 					this._end(e); break;
 			}
 		},
-		// 合并源对象到目标对象上，支持合并多个源对象。如果最后一个参数为true，则支持深拷贝。
+		// 合并源对象到目标对象上，支持合并多个源对象。如果最后一个参数为true，则复制最深层的键值对。
 		_extend: function (target, src) {
 			var args = _slice.call(arguments),
 				len = args.length,

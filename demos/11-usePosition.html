@@ -2,9 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>usePosition</title>
+<title>default</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3, minimum-scale=1.0,user-scalable=no,minimal-ui">
-<link rel="stylesheet" href="../dist/css/style.css">
 <script type="text/javascript">
 if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
     var version = parseFloat(RegExp.$1);
@@ -18,10 +17,10 @@ if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
     document.write('<meta name="viewport" content="width=640, user-scalable=no, target-densitydpi=device-dpi,minimal-ui">');
 }
 </script>
+<link rel="stylesheet" href="../dist/css/style.css">
 </head>
 <body>
 <div class="doc">
-
     <div class="tab-ctrl" id="Jtab_ctrl">
         <div class="block">1</div>
         <div class="block">2</div>
@@ -33,13 +32,12 @@ if(/Android (\d+\.\d+)/.test(navigator.userAgent)){
         <div class="block">8</div>
     </div>
 </div>
-
 <script src="../dist/js/Dial.js"></script>
 <script>
 var dial = new Dial({
     target: "#Jtab_ctrl",
     block: '#Jtab_ctrl .block',
-    position: 'center bottom', 
+    position: 'center center', 
     radius: 280,
     usePosition: false
 });

@@ -36,7 +36,7 @@
 		autoPlay: false,				// 是否自动旋转
 		link: false, 					// 是否支持联动。如果有多个转盘时，转动一致
 
-		onSlideStart: null,		 		// 触摸事件开始时执行	
+		onSlideStart: null,		 		// 触摸事件开始时执行
 		onSlideMove: null,				// 触摸滑动过程中执行
 		onSlideEnd: null				// 触摸事件结束后执行
 	};
@@ -151,10 +151,11 @@
 							block = [block];
 						}
 
-						if(config.useBlockPosition) {		// 如果支持块元素定位，则遍历所有块元素，设置top, left, margin和transform属性。设置transform属性前，先将角度转成弧度。再用半径乘以三角函数。
-							var width, height, 
-								radius = config.radius, 
-								ele, x, y, rotate;
+						if(block.length) {		// 如果支持块元素定位，则遍历所有块元素，设置top, left, margin和transform属性。设置transform属性前，先将角度转成弧度。再用半径乘以三角函数。
+							var width, height,
+								radius = config.radius,
+								ele, x, y, left, top, marginLeft, marginTop, 
+								rotate;
 
 							config.block = block; 						
 							// 块角度
@@ -166,26 +167,39 @@
 								width = parseFloat(window.getComputedStyle(ele, null).width || 0);
 								height = parseFloat(window.getComputedStyle(ele, null).height || 0);
 
-								ele.style.position = 'absolute';
-								ele.style.left = '50%';
-								ele.style.top = '50%';
-								ele.style.marginLeft = '-' + (width / 2) + 'px';
-								ele.style.marginTop = '-' + (height / 2) + 'px';
-
-								x = radius * ( Math.sin( eachAngle * i * Math.PI / 180 ));		
-								y =  -radius * (Math.cos( eachAngle * i * Math.PI / 180 ));	
-
 								if(config.useBlockToAngle) {
 									rotate = eachAngle * i;
 								}else if(config.useBlockAlwaysUp) {
 									rotate = -this.angle;
 								}
-								// 调用._transform(ele, prop, useTransition)方法旋转块元素，第三个参数为false表示不使用过渡动画。
-								this._transform(ele, {translate: {x: x, y: y}, rotate: rotate}, false);
 
-								// 存储初始块元素位置属性
-								this._data(ele, {translate: {x: x, y: y}, rotate: rotate, target: ele});
+								if(config.useBlockPosition) {
+									ele.style.position = 'absolute';
+									ele.style.left = '50%';
+									ele.style.top = '50%';
+									ele.style.marginLeft = '-' + (width / 2) + 'px';
+									ele.style.marginTop = '-' + (height / 2) + 'px';
+								
+									x = radius * ( Math.sin( eachAngle * i * Math.PI / 180 ));		
+									y =  -radius * (Math.cos( eachAngle * i * Math.PI / 180 ));
 
+									// 调用._transform(ele, prop, useTransition)方法旋转块元素，第三个参数为false表示不使用过渡动画。
+									this._transform(ele, {translate: {x: x, y: y}, rotate: rotate}, false);
+
+									// 存储初始块元素位置属性
+									this._data(ele, {translate: {x: x, y: y}, rotate: rotate, target: ele});
+								}else {
+									// 自定义块元素位置
+									left = parseFloat(window.getComputedStyle(ele, null)['left'] || 0);
+									top = parseFloat(window.getComputedStyle(ele, null)['top'] || 0);
+									marginLeft = parseFloat(window.getComputedStyle(ele, null)['margin-left'] || 0);
+									marginTop = parseFloat(window.getComputedStyle(ele, null)['margin-top'] || 0);
+
+									x = left + marginLeft;
+									y = top + marginTop;
+
+									this._data(ele, {translate: {x: 0, y: 0}, rotate: rotate, target: ele});
+								}
 							}
 
 							config.eachAngle = eachAngle;

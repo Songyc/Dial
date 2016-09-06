@@ -151,7 +151,7 @@
 							block = [block];
 						}
 
-						if(block.length) {		// 如果支持块元素定位，则遍历所有块元素，设置top, left, margin和transform属性。设置transform属性前，先将角度转成弧度。再用半径乘以三角函数。
+						if(block.length) {		
 							var width, height,
 								radius = config.radius,
 								ele, x, y, left, top, marginLeft, marginTop, 
@@ -173,6 +173,7 @@
 									rotate = -this.angle;
 								}
 
+								// 如果支持块元素定位，则遍历所有块元素，设置top, left, margin和transform属性。设置transform属性前，先将角度转成弧度。再用半径乘以三角函数。
 								if(config.useBlockPosition) {
 									ele.style.position = 'absolute';
 									ele.style.left = '50%';
@@ -190,16 +191,9 @@
 									this._data(ele, {translate: {x: x, y: y}, rotate: rotate, target: ele});
 								}else {
 									// 自定义块元素位置
-									left = parseFloat(window.getComputedStyle(ele, null)['left'] || 0);
-									top = parseFloat(window.getComputedStyle(ele, null)['top'] || 0);
-									marginLeft = parseFloat(window.getComputedStyle(ele, null)['margin-left'] || 0);
-									marginTop = parseFloat(window.getComputedStyle(ele, null)['margin-top'] || 0);
-
-									x = left + marginLeft;
-									y = top + marginTop;
-
+									this._transform(ele, {translate: {x: 0, y: 0}, rotate: rotate}, false);
 									this._data(ele, {translate: {x: 0, y: 0}, rotate: rotate, target: ele});
-								}
+								}						
 							}
 
 							config.eachAngle = eachAngle;

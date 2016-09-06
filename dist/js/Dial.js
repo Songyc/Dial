@@ -697,14 +697,14 @@
 	'translate rotate scale skew'.split(' ').forEach(function (item) {
 		Dial.prototype['_' + item] = function (prop, el, useTransition) {
 			var obj = {};
-			// 如果未传入参数prop，直接返回。
-			if(prop === undefined) {
+			
+			if(prop === undefined) { 									// 如果未传入参数prop，直接返回。
 				return;
 			}
-			// 修正参数el, 默认为this.target转盘元素
-			el = el || this.target;
-			// 如果参数prop为数字，存储在obj中，设置为obj属性item。
-			if(typeof prop === 'number') {
+			
+			el = el || this.target; 									// 修正参数el, 默认为this.target转盘元素
+			
+			if(typeof prop === 'number') {								// 如果参数prop为数字，存储在obj中，设置为obj属性item。
 				obj[item] = prop; 					
 			}else if(_toString.call(prop) === '[object Object]'){ 		// 如果参数prop是对象
 				this._extend(obj, prop); 								// 调用this._extend(target, src)方法将参数prop合并到obj对象中

@@ -5,7 +5,7 @@
 
 # Dial
 >用于移动端的转盘插件
-
+<a href="http://htmlpreview.github.io/?https://github.com/Songyc/Dial/blob/master/demos/01-default.html" target="_blank">默认</a>
 ##选项
 ###块元素指类名为".block"的元素、块角度指每次旋转一个块元素的角度
 
